@@ -73,3 +73,9 @@ echo "[gen]          : ",$GEN_DIR
 # ts
 rm -rf $DIR_DIR_TS
 mv $GEN_DIR_TS $DIR_DIR_TS
+echo copy to $DIR_DIR_TS
+
+DIR_DIR_TS1=$PROJECT_DIR/../ptp-ai-chat/src/lib/ptp/protobuf/
+echo copy to $DIR_DIR_TS1
+rm -rf $DIR_DIR_TS1
+cp -a $DIR_DIR_TS $DIR_DIR_TS1

@@ -15,7 +15,6 @@ const Task = {
 	completed: Boolean,
 	due_date: new DateOnly(),
 };
-
 export class TaskFetch extends OpenAPIRoute {
 	static schema = {
 		tags: ['Tasks'],
@@ -35,7 +34,7 @@ export class TaskFetch extends OpenAPIRoute {
 		},
 	};
 
-	async handle(request: Request, env:  Record<string, any>) {
+	async handle(request: Request, env: Record<string, any>) {
 		// Retrieve the validated slug
 		const { taskSlug } = env;
 

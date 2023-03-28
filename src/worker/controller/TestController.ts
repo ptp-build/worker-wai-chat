@@ -8,7 +8,6 @@ import {Chat} from "../share/model/Chat";
 import {User} from "../share/model/User";
 import {Pdu} from "../../lib/ptp/protobuf/BaseMsg";
 import {PbMsg} from "../../lib/ptp/protobuf/PTPCommon";
-import { an } from 'vitest/dist/global-58e8e951';
 
 export default async function(request:Request){
   const TEST_TOKEN = ENV.TEST_TOKEN;

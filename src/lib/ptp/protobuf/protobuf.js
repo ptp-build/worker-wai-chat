@@ -712,7 +712,7 @@ var $conv_message = $createConverter([
                     '$': {"1":["width","uint32",0],"2":["height","uint32",0],"3":["dataUri","string",""]}
                 },
                 PbUser: {
-                    '$': {"1":["id","string",""],"2":["firstName","string",""],"3":["usernames","<default.PTP.Common.PbUsernames",null],"4":["isMin","bool",false],"5":["isPremium","bool",false],"6":["type","string",""],"7":["hasVideoAvatar","bool",false],"8":["canBeInvitedToGroup","bool",false],"9":["phoneNumber","string",""],"10":["noStatus","bool",false],"11":["accessHash","string",""],"12":["fullInfo","default.PTP.Common.PbFullInfo",null],"13":["lastName","string",""],"14":["isSelf","bool",false]}
+                    '$': {"1":["id","string",""],"2":["firstName","string",""],"3":["usernames","<default.PTP.Common.PbUsernames",null],"4":["isMin","bool",false],"5":["isPremium","bool",false],"6":["type","string",""],"7":["hasVideoAvatar","bool",false],"8":["canBeInvitedToGroup","bool",false],"9":["phoneNumber","string",""],"10":["noStatus","bool",false],"11":["accessHash","string",""],"12":["fullInfo","default.PTP.Common.PbFullInfo",null],"13":["lastName","string",""],"14":["isSelf","bool",false],"15":["avatarHash","string",""],"16":["photos","default.PTP.Common.PbPhoto",null]}
                 },
                 PbUsernames: {
                     '$': {"1":["username","string",""],"2":["isActive","bool",false],"3":["isEditable","bool",false]}

@@ -164,6 +164,8 @@ export interface PbUser_Type {
   fullInfo?: PbFullInfo_Type;
   lastName?: string;
   isSelf?: boolean;
+  avatarHash?: string;
+  photos?: PbPhoto_Type;
 }
 
 export interface PbUsernames_Type {

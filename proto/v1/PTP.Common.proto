@@ -87,6 +87,8 @@ message PbUser {
   optional string accessHash = 11;
   optional PbFullInfo fullInfo = 12;
   optional bool isSelf = 14;
+  optional string avatarHash = 15;
+	optional PbPhoto photos = 16;
 }
 
 message PbSettings {
