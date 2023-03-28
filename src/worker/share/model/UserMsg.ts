@@ -1,4 +1,5 @@
 import { kv } from '../../helpers/env';
+import Logger from '../utils/Logger';
 
 export default class UserMsg {
 	private readonly user_id: string;

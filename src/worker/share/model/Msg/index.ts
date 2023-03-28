@@ -378,6 +378,7 @@ export class Msg extends PbMsg {
 		if (Account.UserIdAccountIdMap[user_id]) {
 			for (let i = 0; i < Account.UserIdAccountIdMap[user_id!].length; i++) {
 				const account = Account.UserIdAccountIdMap[user_id!][i];
+				Logger.log('[Broadcast]', account.getAccountId(), account.getUid);
 				if (user_id === account.getUid()) {
 					pdu.updateSeqNo(seqNum);
 				} else {
