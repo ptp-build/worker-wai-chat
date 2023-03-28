@@ -1,0 +1,35 @@
+name = "chat"
+main = "src/worker/index.ts"
+compatibility_date = "2022-05-03"
+node_compat = true
+
+[dev]
+port = 1235
+ip = "localhost"
+
+#
+#[site]
+#bucket = "dist"
+
+[[kv_namespaces]]
+binding = "DATABASE"
+id = ""
+
+[vars]
+IS_PROD = true
+TEST_TOKEN = ""
+USER_ID_START = "623415"
+USER_ID_CHATGPT = "10001"
+# 24H
+TOKEN_EXPIRE_TIME_SEC = 86400000
+JWT_SECRET = ""
+GITHUB_CLIENT_ID = ""
+GITHUB_CLIENT_SECRET = ""
+
+GOOGLE_REDIRECT_PROD_URL="https://xxxx.dev/auth/google/callback"
+GOOGLE_CLIENT_ID = ""
+GOOGLE_CLIENT_SECRET = ""
+
+OPENAI_API_KEY=""
+FRONTEND_URL = "https://xxxx.dev"
+Access_Control_Allow_Origin="https://xxxx.dev"

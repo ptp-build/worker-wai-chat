@@ -1,0 +1,53 @@
+syntax = "proto2";
+package PTP.Msg;
+import "PTP.Common.proto";
+option java_package = "chat.wai.protobuf";
+
+option optimize_for = LITE_RUNTIME;
+
+message SendReq{
+  required string payload = 1;
+}
+
+message SendRes{
+  required string action = 1;
+  required string payload = 2;
+  required Common.ERR err = 100;
+}
+
+message MsgUpdateReq{
+  required string user_id = 1;
+  required string chat_id = 2;
+  required uint32 msg_id = 3;
+  required string text = 4;
+}
+
+message MsgUpdateRes{
+  required Common.ERR err = 100;
+}
+
+message MsgDeleteReq{
+  required string user_id = 1;
+  required string chat_id = 2;
+  repeated uint32 msg_ids = 3;
+  repeated bool revoke = 4;
+}
+
+message MsgDeleteRes{
+  required Common.ERR err = 100;
+}
+
+message MsgListReq{
+  required string chatId = 1;
+  required uint32 lastMessageId = 2;
+  required uint32 limit = 3;
+  optional bool isUp = 4;
+}
+
+message MsgListRes{
+  required string payload = 1;
+  required Common.ERR err = 100;
+}
+
+
+
