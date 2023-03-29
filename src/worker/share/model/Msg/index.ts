@@ -23,7 +23,7 @@ import UserMsg from '../UserMsg';
 import Logger from '../../utils/Logger';
 import Account from '../../Account';
 
-type MsgType = 'newMessage' | 'updateMessageSendSucceeded' | 'updateMessage';
+type MsgType = 'newMessage' | 'updateMessageSendSucceeded' | 'updateMessage' | 'updateProfile';
 
 export class Msg extends PbMsg {
 	public declare msg?: PbMsg_Type;
@@ -102,6 +102,20 @@ export class Msg extends PbMsg {
 		}
 	}
 
+	async reply(
+		msgType: MsgType = 'newMessage',
+		payload?: Record<string, any>,
+		seqNum: number = 0
+	) {
+		const pdu = new SendRes({
+			err: ERR.NO_ERROR,
+			action: msgType,
+			payload: JSON.stringify({
+				...payload,
+			}),
+		}).pack();
+		await this.broadcast(pdu, seqNum);
+	}
 	async send(
 		msgType: MsgType = 'newMessage',
 		payloadOther?: Record<string, any>,
@@ -116,16 +130,16 @@ export class Msg extends PbMsg {
 			}
 			this.msg!.id = this.user_id === this.senderId ? this.senderMsgId! : this.receiverMsgId!;
 			this.msg.isOutgoing = this.user_id === this.senderId;
-			const pdu = new SendRes({
-				err: ERR.NO_ERROR,
-				action: msgType,
-				payload: JSON.stringify({
+
+			await this.reply(
+				msgType,
+				{
 					msg: this.msg,
 					...payloadOther,
-				}),
-			}).pack();
+				},
+				seqNum
+			);
 			this.hasSent = true;
-			await this.broadcast(pdu, seqNum);
 		}
 	}
 	setMsgDate() {

@@ -1,10 +1,12 @@
 import { TEXT_AI_THINKING } from '../../../../setting';
 import { sendMessageToChatGPT } from '../../../helpers/openai';
-import { PbBotInfo_Type } from '../../../../lib/ptp/protobuf/PTPCommon/types';
+import { PbBotInfo_Type, PbUser_Type } from '../../../../lib/ptp/protobuf/PTPCommon/types';
 import { AiChatHistory, AiChatRole } from '../../../../types';
 import { ENV } from '../../../helpers/env';
 import { Msg } from './index';
 import Logger from '../../utils/Logger';
+import { PbUser } from '../../../../lib/ptp/protobuf/PTPCommon';
+import { User } from '../User';
 
 export default class {
 	private user_id: string;
@@ -126,10 +128,17 @@ export default class {
 					msg: msgSendByUser.msg,
 				}),
 			});
-			const res: { msg: string } = await resp.json();
+			const res: { reply?: string; botUser?: PbUser_Type } = await resp.json();
 			console.log(res);
-			if (res.msg) {
-				await msgModelBotReply.sendText(res.msg);
+			if (res.reply) {
+				if (res.botUser) {
+					console.log('[updateProfile]', res.botUser);
+					const user = await User.getFromCache(res.botUser.id);
+					// user?.setUserInfo(res.botUser);
+					// user?.save().catch(console.error);
+					await msgModelBotReply.reply('updateProfile', { user: res.botUser });
+				}
+				await msgModelBotReply.sendText(res.reply);
 				await msgModelBotReply.save();
 			}
 		} catch (e) {

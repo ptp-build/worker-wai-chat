@@ -21,6 +21,43 @@ export class User extends PbUser {
 	static userTypeRegular = 'userTypeRegular';
 	static userTypeDeleted = 'userTypeDeleted';
 	static userTypeUnknown = 'userTypeUnknown';
+	setAvatar(id: string, thumbnail: string) {
+		const photo = {
+			avatarHash: id,
+			photos: [
+				{
+					id: id,
+					thumbnail: {
+						dataUri: thumbnail,
+						width: 640,
+						height: 640,
+					},
+					sizes: [
+						{
+							width: 160,
+							height: 160,
+							type: 's',
+						},
+						{
+							width: 320,
+							height: 320,
+							type: 'm',
+						},
+						{
+							width: 640,
+							height: 640,
+							type: 'x',
+						},
+					],
+				},
+			],
+		};
+		this.setUserInfo({
+			...this.getUserInfo(),
+			...photo,
+		});
+		return photo;
+	}
 	setUserInfo(user: any) {
 		this.msg = {
 			id: user.id,
@@ -180,8 +217,8 @@ export class User extends PbUser {
 		await kv.put(`U_${this.msg!.id}`, Buffer.from(this.pack().getPbData()).toString('hex'));
 	}
 
-	static async getFromCache(id: string): Promise<User | null> {
-		let t = await kv.get(`U_${id}`);
+	static async getFromCache(id: string, forceCache?: boolean): Promise<User | null> {
+		let t = await kv.get(`U_${id}`, forceCache);
 		if (t) {
 			const u = new User();
 			u.msg = User.parseMsg(new Pdu(Buffer.from(t, 'hex')));

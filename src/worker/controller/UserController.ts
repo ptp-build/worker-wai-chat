@@ -1,4 +1,4 @@
-import { ENV, kv } from '../helpers/env';
+import { ENV } from '../helpers/env';
 import { User } from '../share/model/User';
 import { Bot } from '../share/model/Bot';
 import { Chat } from '../share/model/Chat';
@@ -9,10 +9,6 @@ import UploadProfilePhotoRes from '../../lib/ptp/protobuf/PTPAuth/UploadProfileP
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPAuth';
 import UserChat from '../share/model/UserChat';
-import { OpenAPIRoute, Path, Str } from '@cloudflare/itty-router-openapi';
-import Logger from '../share/utils/Logger';
-import UserMsg from '../share/model/UserMsg';
-import { Msg } from '../share/model/Msg';
 
 let initSystemBot_down = false;
 
@@ -169,41 +165,7 @@ export async function uploadProfilePhotoReq(pdu: Pdu, account: Account) {
 
 	const user = await User.getFromCache(account.getUid()!);
 	if (!is_video) {
-		const payload = {
-			avatarHash: id,
-			photos: [
-				{
-					id: id,
-					thumbnail: {
-						dataUri: thumbnail,
-						width: 640,
-						height: 640,
-					},
-					sizes: [
-						{
-							width: 160,
-							height: 160,
-							type: 's',
-						},
-						{
-							width: 320,
-							height: 320,
-							type: 'm',
-						},
-						{
-							width: 640,
-							height: 640,
-							type: 'x',
-						},
-					],
-				},
-			],
-		};
-		// @ts-ignore
-		user?.setUserInfo({
-			...user?.getUserInfo()!,
-			...payload,
-		});
+		const payload = user?.setAvatar(id, thumbnail);
 		await user?.save();
 		account.sendPdu(
 			new UploadProfilePhotoRes({

@@ -28,7 +28,7 @@ export default class ChatMsg {
 
 	async getMsgIdFromKv() {
 		const key = `C_M_I_${this.chatId}`;
-		let msgId = await kv.get(key);
+		let msgId = await kv.get(key, true);
 		if (!msgId) {
 			msgId = 0;
 		}
