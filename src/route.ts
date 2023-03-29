@@ -8,6 +8,7 @@ import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
 import { ENV } from './worker/helpers/env';
 import { SWAGGER_DOC } from './setting';
 import * as ApiController from './worker/controller/ApiController';
+import * as BotController from './worker/controller/BotController';
 
 const router = OpenAPIRouter(SWAGGER_DOC);
 
@@ -22,7 +23,9 @@ router.all('*', (request: Request) => {
 	}
 });
 
+router.post('/api/bot', BotController.Bot);
 router.get('/api/chat/:chatId', ApiController.ChatGet);
+router.get('/api/chatMsg/:userId/:chatId', ApiController.ChatMsgGet);
 router.get('/api/user/:userId', ApiController.UserGet);
 router.get('/api/users', ApiController.UserList);
 

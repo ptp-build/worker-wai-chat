@@ -88,8 +88,8 @@ export class Chat extends PbChat {
 		await kv.put(`C_${this.msg!.id}`, Buffer.from(this.pack().getPbData()).toString('hex'));
 	}
 
-	static async getFromCache(id: string): Promise<Chat | null> {
-		let t = await kv.get(`C_${id}`);
+	static async getFromCache(id: string, forceCache?: boolean): Promise<Chat | null> {
+		let t = await kv.get(`C_${id}`, forceCache);
 		if (t) {
 			const u = new Chat();
 			u.msg = Chat.parseMsg(new Pdu(Buffer.from(t, 'hex')));

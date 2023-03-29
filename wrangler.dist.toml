@@ -1,4 +1,4 @@
-name = "chat"
+name = "bot"
 main = "src/index.ts"
 compatibility_date = "2022-05-03"
 node_compat = true
