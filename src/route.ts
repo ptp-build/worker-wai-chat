@@ -5,30 +5,11 @@ import TestController from './worker/controller/TestController';
 import TaskController from './worker/controller/TaskController';
 
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
-import { UserGet, UserList } from './worker/controller/UserController';
 import { ENV } from './worker/helpers/env';
+import { SWAGGER_DOC } from './setting';
+import * as ApiController from './worker/controller/ApiController';
 
-const router = OpenAPIRouter({
-	schema: {
-		info: {
-			title: 'Worker Wai Chat',
-			version: '1.0',
-		},
-		components: {
-			securitySchemes: {
-				bearerAuth: {
-					type: 'http',
-					scheme: 'bearer',
-				},
-			},
-		},
-		security: [
-			{
-				bearerAuth: [],
-			},
-		],
-	},
-});
+const router = OpenAPIRouter(SWAGGER_DOC);
 
 router.all('*', (request: Request) => {
 	const { TEST_TOKEN, IS_PROD } = ENV;
@@ -41,12 +22,11 @@ router.all('*', (request: Request) => {
 	}
 });
 
-router.get('/api/user/:userId', UserGet);
-router.get('/api/users', UserList);
+router.get('/api/chat/:chatId', ApiController.ChatGet);
+router.get('/api/user/:userId', ApiController.UserGet);
+router.get('/api/users', ApiController.UserList);
 
 router.original.get('/', request => Response.redirect(`${request.url}docs`, 302));
-
-// 404 for everything else
 router.all('*', () => new Response('Not Found.', { status: 404 }));
 
 export async function handleEvent(event: FetchEvent) {
@@ -73,12 +53,6 @@ export async function handleEvent(event: FetchEvent) {
 
 	if (url.pathname === '/task') {
 		return TaskController(event.request);
-	}
-
-	if (url.pathname.startsWith('/version')) {
-		return ResponseJson({
-			v: '1.0.1',
-		});
 	}
 	return await router.handle(event.request);
 }

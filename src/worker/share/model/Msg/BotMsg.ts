@@ -27,12 +27,12 @@ export default class {
 		const init_history: AiChatHistory[] = msgSendByUser.getChatGptInitMsg(config);
 
 		const history = await msgSendByUser.getAiMsgHistory();
-		Logger.log(msgSendByUser.getMsgText());
+		console.log(msgSendByUser.getMsgText());
 		await msgModelBotReply.sendText(TEXT_AI_THINKING);
 		let [error, reply] = await sendMessageToChatGPT(question, [...init_history, ...history]);
 		if (!error) {
 			reply = reply.replace('```html', '```');
-			Logger.log(reply);
+			console.log(reply);
 			await msgModelBotReply.sendText(reply, 'updateMessageSendSucceeded', {
 				date: Msg.genMsgDate(),
 			});
@@ -55,7 +55,7 @@ export default class {
 						api_key: undefined,
 					});
 					const config1 = await msgSendByUser.getAiConfig();
-					Logger.log(config1);
+					console.log(config1);
 					await msgModelBotReply.sendText(`配置已经还原初始化`);
 					break;
 				case '/get_api_key':
@@ -63,7 +63,9 @@ export default class {
 					if (config?.api_key) {
 						await msgModelBotReply.sendText(config.api_key);
 					} else {
-						await msgModelBotReply.sendText('您还没有设置自己的api_kay,当前api_key属于平台公用');
+						await msgModelBotReply.sendText(
+							'您还没有设置自己的api_kay,当前api_key属于平台公用'
+						);
 					}
 					break;
 				case '/set_api_key':
@@ -91,6 +93,14 @@ export default class {
 				default:
 					return;
 			}
+		} else if (botInfo.botId === ENV.USER_ID_BOT_FATHER) {
+			switch (msgSendByUser.getMsgText()) {
+				case '/start':
+					await msgModelBotReply.sendText(botInfo['description']!);
+					break;
+				default:
+					return;
+			}
 		} else {
 			switch (msgSendByUser.getMsgText()) {
 				case '/start':
@@ -102,42 +112,65 @@ export default class {
 		}
 	}
 	async process() {
-		const { msgModelBotReply, msgSendByUser, botInfo } = this;
-		const askText = msgSendByUser.getMsgText();
-		if (askText) {
-			if (askText.indexOf('/') === 0) {
-				await this.processCmd();
-			} else {
-				if (botInfo.isChatGpt) {
-					const config = await msgSendByUser.getAiConfig();
-					const msg = await Msg.getFromCache(this.user_id, this.chatId, msgSendByUser.msg?.id! - 2);
-					Logger.log(msg?.getMsgText());
-					switch (msg?.getMsgText()) {
-						case '/set_init_msg':
-							config!.init_system_content = askText;
-							await msgSendByUser.updateAiConfig(config);
-							await msgModelBotReply.sendText(
-								`当初始化信息已更新为:${config!.init_system_content}`
-							);
-							break;
-						case '/set_api_key':
-							config!.api_key = askText;
-							await msgSendByUser.updateAiConfig(config);
-							await msgModelBotReply.sendText(`当api_key已更新为:${config!.api_key}`);
-							break;
-						case '/clear':
-							if (askText.toLowerCase() === 'yes') {
-								await msgSendByUser.clearAiMsgHistory();
-								await msgModelBotReply.sendText(`已为您清空！`);
-							}
-							break;
-						default:
-							await this.askChatGpt(askText);
-							break;
-					}
-				}
+		try {
+			const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
+			const resp: Response = await fetch(`${ENV.BOT_API}/bot`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer `,
+				},
+				body: JSON.stringify({
+					botInfo,
+					user_id,
+					msg: msgSendByUser.msg,
+				}),
+			});
+			const res: { msg: string } = await resp.json();
+			console.log(res);
+			if (res.msg) {
+				await msgModelBotReply.sendText(res.msg);
+				await msgModelBotReply.save();
 			}
-			msgModelBotReply.save().catch(console.error);
+		} catch (e) {
+			console.error(e);
 		}
+		//
+		// const askText = msgSendByUser.getMsgText();
+		// if (askText) {
+		// 	if (askText.indexOf('/') === 0) {
+		// 		await this.processCmd();
+		// 	} else {
+		// 		if (botInfo.isChatGpt) {
+		// 			const config = await msgSendByUser.getAiConfig();
+		// 			const msg = await Msg.getFromCache(this.user_id, this.chatId, msgSendByUser.msg?.id! - 2);
+		// 			console.log(msg?.getMsgText());
+		// 			switch (msg?.getMsgText()) {
+		// 				case '/set_init_msg':
+		// 					config!.init_system_content = askText;
+		// 					await msgSendByUser.updateAiConfig(config);
+		// 					await msgModelBotReply.sendText(
+		// 						`当初始化信息已更新为:${config!.init_system_content}`
+		// 					);
+		// 					break;
+		// 				case '/set_api_key':
+		// 					config!.api_key = askText;
+		// 					await msgSendByUser.updateAiConfig(config);
+		// 					await msgModelBotReply.sendText(`当api_key已更新为:${config!.api_key}`);
+		// 					break;
+		// 				case '/clear':
+		// 					if (askText.toLowerCase() === 'yes') {
+		// 						await msgSendByUser.clearAiMsgHistory();
+		// 						await msgModelBotReply.sendText(`已为您清空！`);
+		// 					}
+		// 					break;
+		// 				default:
+		// 					await this.askChatGpt(askText);
+		// 					break;
+		// 			}
+		// 		}
+		// 	}
+		// 	msgModelBotReply.save().catch(console.error);
+		// }
 	}
 }

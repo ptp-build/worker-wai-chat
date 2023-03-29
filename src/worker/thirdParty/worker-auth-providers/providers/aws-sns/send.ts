@@ -1,3 +1,4 @@
+// @ts-ignore
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import { getFixedDigitRandomNumber } from '../../utils/helpers';
 import { ConfigError, UnknownError } from '../../utils/errors';
@@ -29,20 +30,20 @@ export default async function send({ options }: Props): Promise<any> {
 		expirationTtl = 60,
 		accessKeyId,
 		secretAccessKey,
-		isLogEnabled = false
+		isLogEnabled = false,
 	} = options;
 	const client = new SNSClient({
 		region,
 		credentials: {
 			accessKeyId,
-			secretAccessKey
-		}
+			secretAccessKey,
+		},
 	});
 	const otp = getFixedDigitRandomNumber(otpLength);
 
 	if (otpLength < 4) {
 		throw new ConfigError({
-			message: 'OTP length can not be less then 4'
+			message: 'OTP length can not be less then 4',
 		});
 	}
 
@@ -50,7 +51,7 @@ export default async function send({ options }: Props): Promise<any> {
 
 	const params = {
 		Message: otpMessage,
-		PhoneNumber: phone
+		PhoneNumber: phone,
 	};
 	const command = new PublishCommand(params);
 
@@ -59,14 +60,14 @@ export default async function send({ options }: Props): Promise<any> {
 		logger.setEnabled(isLogEnabled);
 		logger.log(`[success send]', ${JSON.stringify(data)}`, 'info');
 		const savedData = await kvProvider.put(phone, otp, {
-			expirationTtl
+			expirationTtl,
 		});
 		logger.log(`[savedData]: ${JSON.stringify(savedData)}`, 'info');
 		return data;
 	} catch (e: any) {
 		logger.log(`[error]: ${JSON.stringify(e.stack)}`, 'error');
 		throw new UnknownError({
-			message: e.stack
+			message: e.stack,
 		});
 	}
 }

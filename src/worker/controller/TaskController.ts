@@ -5,7 +5,7 @@ import { RequestForm } from '../../types';
 import Account from '../share/Account';
 import { Msg } from '../share/model/Msg';
 import { TASK_EXE_USER_ID } from './WsController';
-import Logger from "../share/utils/Logger";
+import Logger from '../share/utils/Logger';
 
 type Task = {
 	account: Account;
@@ -42,7 +42,7 @@ export async function creatTask(account: Account, modelMsg: Msg) {
 		const msgModelBotCmdReply = new Msg();
 		msgModelBotCmdReply.init(user_id, chatId, true, user_id);
 		await msgModelBotCmdReply.sendText(`${taskId} 【created】${taskText}`);
-		Logger.log('task reply', msgModelBotCmdReply.msg);
+		console.log('task reply', msgModelBotCmdReply.msg);
 	}
 }
 
@@ -67,12 +67,12 @@ export default async function (request: Request) {
 	}
 	//@ts-ignore
 	const { action, payload } = await input;
-	Logger.log(action);
+	console.log(action);
 	const user_id = TASK_EXE_USER_ID;
 	const chatId = ENV.USER_ID_BOT_DEV;
 	const msgModelBotCmdReply = new Msg();
 	msgModelBotCmdReply.init(user_id, chatId, true, user_id);
-	Logger.log(JSON.stringify(payload, null, 2));
+	console.log(JSON.stringify(payload, null, 2));
 	switch (action) {
 		case 'Send_User':
 			const { user } = payload;

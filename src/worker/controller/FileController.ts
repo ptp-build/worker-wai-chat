@@ -4,12 +4,12 @@ import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import { storage } from '../helpers/env';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { FileInfo } from '../../lib/ptp/protobuf/PTPCommon';
-import Logger from "../share/utils/Logger";
+import Logger from '../share/utils/Logger';
 
 export async function Upload(pdu: Pdu) {
 	const req = UploadReq.parseMsg(pdu);
 	const { id, part, part_total, size, type } = req.file;
-	Logger.log('[UPLOAD]', { id, part, part_total, size, type });
+	console.log('[UPLOAD]', { id, part, part_total, size, type });
 	await storage.put(`media/${id}_${part + 1}`, new FileInfo(req.file).encode());
 	return new Response('', {
 		status: 200,
@@ -21,7 +21,7 @@ export async function Upload(pdu: Pdu) {
 
 export async function Download(pdu: Pdu) {
 	const req = DownloadReq.parseMsg(pdu);
-	Logger.log('[Download]', req);
+	console.log('[Download]', req);
 	let body;
 	try {
 		let i = 1;

@@ -1,1 +1,22 @@
-export const TEXT_AI_THINKING = "..."
+export const TEXT_AI_THINKING = '...';
+export const SWAGGER_DOC = {
+	schema: {
+		info: {
+			title: 'Worker Wai Chat',
+			version: '1.0',
+		},
+		components: {
+			securitySchemes: {
+				bearerAuth: {
+					type: 'http',
+					scheme: 'bearer',
+				},
+			},
+		},
+		security: [
+			{
+				bearerAuth: [],
+			},
+		],
+	},
+};

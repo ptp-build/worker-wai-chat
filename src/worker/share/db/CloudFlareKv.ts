@@ -7,13 +7,13 @@ export default class CloudFlareKv {
 		this.db = db;
 	}
 	async put(key: string, value: any) {
-		Logger.log('[kv put]', key, value);
+		// console.log('[kv put]', key, value);
 		CloudFlareKv.cache[key] = value;
 		return this.db.put(key, value);
 	}
 
-	async get(key: string) {
-		if (CloudFlareKv.cache[key] !== undefined) {
+	async get(key: string, force?: boolean) {
+		if (!force && CloudFlareKv.cache[key] !== undefined) {
 			return CloudFlareKv.cache[key];
 		} else {
 			Logger.debug('from cache', key);

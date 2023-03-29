@@ -1,6 +1,6 @@
 import { USER_CONFIG } from './context';
 import { ENV } from './env.js';
-import Logger from "../share/utils/Logger";
+import Logger from '../share/utils/Logger';
 
 // 发送消息到ChatGPT
 export async function sendMessageToChatGPT(
@@ -14,7 +14,7 @@ export async function sendMessageToChatGPT(
 			...USER_CONFIG.OPENAI_API_EXTRA_PARAMS,
 			messages: [...(history || []), { role: 'user', content: message }],
 		};
-		Logger.log('sendMessageToChatGPT', body.model, body.messages);
+		console.log('sendMessageToChatGPT', body.model, body.messages);
 		const resp: Response = await fetch('https://api.openai.com/v1/chat/completions', {
 			method: 'POST',
 			headers: {

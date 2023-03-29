@@ -48,7 +48,7 @@ async function handleSession(websocket: WebSocket) {
 				return;
 			}
 			let pdu = new Pdu(Buffer.from(data));
-			Logger.log(
+			console.log(
 				'[MESSAGE]',
 				pdu.getSeqNum(),
 				pdu.getCommandId(),
@@ -82,8 +82,8 @@ async function handleSession(websocket: WebSocket) {
 						authStep2Req.ts + Buffer.concat([p!, q!]).toString('hex')
 					);
 					await accountServer.initEcdh(res.pubKey, p!, q!);
-					// Logger.log(authStep2Req.address,res.address)
-					// Logger.log("shareKey",accountServer.getShareKey());
+					// console.log(authStep2Req.address,res.address)
+					// console.log("shareKey",accountServer.getShareKey());
 					pduRsp = new AuthStep2Res({
 						err: ERR.NO_ERROR,
 					}).pack();
@@ -162,7 +162,7 @@ async function handleSession(websocket: WebSocket) {
 						break;
 					}
 					const uid_cache = await accountServer.getUidFromCacheByAddress(authLoginReq.address);
-					// Logger.log("uid_cache => ",uid_cache,authLoginReq.uid)
+					// console.log("uid_cache => ",uid_cache,authLoginReq.uid)
 					if (uid_cache && uid_cache !== authLoginReq.uid) {
 						pduRsp = new AuthLoginRes({
 							err: ERR.ERR_AUTH_LOGIN,
@@ -192,7 +192,7 @@ async function handleSession(websocket: WebSocket) {
 					}
 
 					Account.UserIdAccountIdMap[user_id].push(accountServer);
-					Logger.log('[LOGIN OK] ====>>>', user_id);
+					console.log('[LOGIN OK] ====>>>', user_id);
 					break;
 				default:
 					await _ApiMsg(pdu, accountServer);
@@ -213,7 +213,7 @@ async function handleSession(websocket: WebSocket) {
 	});
 
 	websocket.addEventListener('close', async () => {
-		Logger.log('[close]', {
+		console.log('[close]', {
 			uid: accountServer.getUid()!,
 			accountId: accountServer.getAccountId(),
 		});
@@ -232,7 +232,7 @@ async function handleSession(websocket: WebSocket) {
 					address: account.getAddress()!,
 				});
 			});
-			kv.put('USER_IDS', JSON.stringify(users)).catch(Logger.log);
+			kv.put('USER_IDS', JSON.stringify(users)).catch(console.log);
 		}
 	});
 }
@@ -290,7 +290,7 @@ export async function _ApiMsg(pdu: Pdu, account: Account) {
 			case ActionCommands.CID_LoadChatsReq:
 				await initSystemBot(getInitSystemBots());
 				const loadChatsReq = LoadChatsReq.parseMsg(pdu);
-				// Logger.log(">>>loadChatsReq",loadChatsReq)
+				// console.log(">>>loadChatsReq",loadChatsReq)
 				let user_id = account.getUid() || undefined;
 				pduRsp = new LoadChatsRes({
 					err: ERR.NO_ERROR,

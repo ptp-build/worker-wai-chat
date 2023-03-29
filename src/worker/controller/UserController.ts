@@ -11,6 +11,8 @@ import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPA
 import UserChat from '../share/model/UserChat';
 import { OpenAPIRoute, Path, Str } from '@cloudflare/itty-router-openapi';
 import Logger from '../share/utils/Logger';
+import UserMsg from '../share/model/UserMsg';
+import { Msg } from '../share/model/Msg';
 
 let initSystemBot_down = false;
 
@@ -163,7 +165,7 @@ export async function initSystemBot(bots: any[], force?: boolean) {
 
 export async function uploadProfilePhotoReq(pdu: Pdu, account: Account) {
 	const { id, is_video, thumbnail } = UploadProfilePhotoReq.parseMsg(pdu);
-	Logger.log('uploadProfilePhotoReq', { id, is_video });
+	console.log('uploadProfilePhotoReq', { id, is_video });
 
 	const user = await User.getFromCache(account.getUid()!);
 	if (!is_video) {
@@ -215,7 +217,7 @@ export async function uploadProfilePhotoReq(pdu: Pdu, account: Account) {
 
 export async function updateUsername(pdu: Pdu, account: Account) {
 	const { username } = UpdateUsernameReq.parseMsg(pdu);
-	Logger.log('updateUsername', { username });
+	console.log('updateUsername', { username });
 	const user = await User.getFromCache(account.getUid()!);
 	user?.setUsernames(username);
 	await user?.save();
@@ -229,7 +231,7 @@ export async function updateUsername(pdu: Pdu, account: Account) {
 
 export async function updateProfile(pdu: Pdu, account: Account) {
 	const { about, firstName, lastName } = UpdateProfileReq.parseMsg(pdu);
-	Logger.log('[updateProfile]', { about, firstName, lastName });
+	console.log('[updateProfile]', { about, firstName, lastName });
 	const user = await User.getFromCache(account.getUid()!);
 	const currentUser = user?.getUserInfo();
 	user?.setUserInfo({
@@ -245,51 +247,4 @@ export async function updateProfile(pdu: Pdu, account: Account) {
 		}).pack(),
 		pdu.getSeqNum()
 	);
-}
-
-export class UserGet extends OpenAPIRoute {
-	static schema = {
-		tags: ['User'],
-		parameters: {
-			userId: Path(Str, {
-				description: 'User Id',
-				default: '623415',
-			}),
-		},
-		responses: {
-			'200': {
-				schema: {},
-			},
-		},
-	};
-
-	async handle(request: Request, data: Record<string, any>) {
-		const { userId } = data;
-		const user = await User.getFromCache(userId);
-
-		// // @ts-ignore
-		// Logger.log(user?.getUserInfo().photos[0]);
-		return {
-			metaData: { meta: 'data' },
-			user: user?.getUserInfo(),
-		};
-	}
-}
-
-export class UserList extends OpenAPIRoute {
-	static schema = {
-		tags: ['User'],
-		responses: {
-			'200': {
-				schema: {},
-			},
-		},
-	};
-
-	async handle(request: Request, data: Record<string, any>) {
-		const userIds = await kv.get('USER_IDS');
-		return {
-			userIds,
-		};
-	}
 }

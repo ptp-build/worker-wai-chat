@@ -6,6 +6,7 @@ import Logger from '../share/utils/Logger';
 
 export const ENV: {
 	IS_PROD: boolean;
+	BOT_API: string;
 	TASK_EXE_USER_ID: string;
 	KV_NAMESPACE_KEY: string;
 	TEST_TOKEN: string;
@@ -31,6 +32,7 @@ export const ENV: {
 	MAX_HISTORY_LENGTH: number;
 } = {
 	IS_PROD: true,
+	BOT_API: 'http://localhost:1236/api',
 	KV_NAMESPACE_KEY: 'DATABASE_PROD',
 	TASK_EXE_USER_ID: '',
 	TEST_TOKEN: '',
@@ -68,7 +70,8 @@ export function initEnv(env: Record<string, any>) {
 			ENV[key] = env[key];
 		}
 	}
-	Logger.setLevel(ENV.IS_PROD ? 'info' : 'debug');
+	// Logger.setLevel(ENV.IS_PROD ? 'info' : 'debug');
+	Logger.setLevel(ENV.IS_PROD ? 'debug' : 'debug');
 	kv = new CloudFlareKv();
 	kv.init(env[ENV.KV_NAMESPACE_KEY]);
 	storage = new CloudFlareR2();

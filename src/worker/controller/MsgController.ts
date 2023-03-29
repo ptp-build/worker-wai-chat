@@ -15,15 +15,15 @@ import { ActionCommands } from '../../lib/ptp/protobuf/ActionCommands';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import BotMsg from '../share/model/Msg/BotMsg';
 import UserMsg from '../share/model/UserMsg';
-import Logger from "../share/utils/Logger";
+import Logger from '../share/utils/Logger';
 
 export async function msgHandler(pdu: Pdu, account: Account) {
 	switch (pdu.getCommandId()) {
 		case ActionCommands.CID_MsgListReq:
 			const handleMsgListReq = async (pdu: Pdu) => {
 				const { lastMessageId, isUp, limit, chatId } = MsgListReq.parseMsg(pdu);
-				// Logger.log(payload)
-				Logger.log('CID_MsgListReq', { chatId });
+				// console.log(payload)
+				console.log('CID_MsgListReq', { chatId });
 				const user_id = account.getUid();
 				const res = {
 					users: [],
@@ -62,7 +62,11 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 			if (rows) {
 				const chatMsgId = rows.get(msgUpdateReq.msg_id.toString());
 				if (chatMsgId) {
-					const msg = await Msg.getFromCache(msgUpdateReq.user_id, msgUpdateReq.chat_id, chatMsgId);
+					const msg = await Msg.getFromCache(
+						msgUpdateReq.user_id,
+						msgUpdateReq.chat_id,
+						chatMsgId
+					);
 					if (msg) {
 						msg.chatMsgId = chatMsgId;
 						msg.setMsgText(msgUpdateReq.text);
@@ -106,8 +110,14 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 	}
 	msgSendByUser.init(user_id, chatId, !!botInfo, user_id);
 	await msgSendByUser.send('updateMessageSendSucceeded', { localMsgId: id }, seq_num);
-
 	await msgSendByUser.save();
+	console.log({
+		senderLastMsgId: await msgSendByUser.senderUserMsg?.getLastMsgId(),
+		senderLastChatMsgId: await msgSendByUser.senderUserMsg?.getLastChatMsgId(),
+		pairLastMsgId: await msgSendByUser.pairUserMsg?.getLastMsgId(),
+		pairLastChatMsgId: await msgSendByUser.pairUserMsg?.getLastChatMsgId(),
+		lastChatMsgId: await msgSendByUser.chatMsg?.getLastMsgId(),
+	});
 	if (botInfo) {
 		await new BotMsg(user_id, chatId, msgSendByUser, botInfo).process();
 	}

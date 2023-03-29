@@ -230,7 +230,7 @@ export default class Account {
 		let wallet = new Wallet(Mnemonic.fromEntropy(entropy));
 		const ethWallet = wallet.getPTPWallet(0);
 		this.shareKey = Buffer.from(ecdh(serverPubKey, ethWallet.prvKey));
-		// Logger.log("shareKey",this.shareKey)
+		// console.log("shareKey",this.shareKey)
 		this.aad = aad;
 		this.iv = iv;
 	}
@@ -280,7 +280,7 @@ export default class Account {
 		if (seq_num > 0) {
 			pdu.updateSeqNo(seq_num);
 		}
-		Logger.log(
+		console.log(
 			'[SEND]',
 			'seq_num',
 			pdu.getSeqNum(),

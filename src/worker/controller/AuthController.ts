@@ -9,12 +9,12 @@ import { generateRandomString } from '../share/utils/utils';
 import { AuthForm, AuthResponse, AuthTokenForm, AuthUser } from '../../types';
 
 import { kv, ENV, jwt } from '../helpers/env';
-import Logger from "../share/utils/Logger";
+import Logger from '../share/utils/Logger';
 
 function generateJWT(user: AuthUser) {
 	const iat = Math.ceil(+new Date() / 1000);
 	const exp = iat + ENV.TOKEN_EXPIRE_TIME_SEC;
-	Logger.log('[iat, exp]', iat, exp);
+	console.log('[iat, exp]', iat, exp);
 	return jwt.sign({
 		iat,
 		exp,

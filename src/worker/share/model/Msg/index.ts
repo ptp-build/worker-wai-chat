@@ -41,9 +41,9 @@ export class Msg extends PbMsg {
 	public senderMsgId?: number;
 	public receiverMsgId?: number;
 	public chatMsgId?: number;
-	private chatMsg?: ChatMsg;
-	private senderUserMsg?: UserMsg;
-	private pairUserMsg?: UserMsg;
+	public chatMsg?: ChatMsg;
+	public senderUserMsg?: UserMsg;
+	public pairUserMsg?: UserMsg;
 
 	static getStorageKey(user_id: string, chatId: string) {
 		const chatIsNotGroupOrChannel = !chatId.startsWith('-');
@@ -61,7 +61,7 @@ export class Msg extends PbMsg {
 		return !chatId.startsWith('-');
 	}
 	init(user_id: string, chatId: string, isBotChat?: boolean, senderId?: string) {
-		this.chatMsg = new ChatMsg(chatId);
+		this.chatMsg = new ChatMsg(chatId, user_id);
 
 		this.senderId = senderId ? senderId : this.user_id;
 		this.user_id = user_id;
@@ -257,7 +257,7 @@ export class Msg extends PbMsg {
 		const userMsg = new UserMsg(user_id, chatId);
 		await userMsg.init();
 		const lastMsgId = await userMsg.getLastMsgId();
-		Logger.log('getMsgList', { chatId, lastMessageId, limit, lastMsgId, isUp });
+		console.log('getMsgList', { chatId, lastMessageId, limit, lastMsgId, isUp });
 		const rows: Msg[] = [];
 		if (lastMsgId == 0) {
 			return rows;
@@ -267,13 +267,17 @@ export class Msg extends PbMsg {
 			lastMessageId = 0;
 		}
 		let chatMsgIds: { chatMsgId: number; msgId: number }[] = [];
-		if (isUp) {
-			if (lastMessageId < lastMsgId) {
-				chatMsgIds = userMsg.getUserChatMsgIdsByMsgId(lastMessageId, limit, 'UP');
-			}
+		if (lastMessageId === 0) {
+			chatMsgIds = userMsg.getUserChatMsgIdsByMsgId(lastMsgId + 1, limit, 'DOWN');
 		} else {
-			if (lastMessageId > 0) {
-				chatMsgIds = userMsg.getUserChatMsgIdsByMsgId(lastMessageId, limit, 'DOWN');
+			if (isUp) {
+				if (lastMessageId < lastMsgId) {
+					chatMsgIds = userMsg.getUserChatMsgIdsByMsgId(lastMessageId, limit, 'UP');
+				}
+			} else {
+				if (lastMessageId > 0) {
+					chatMsgIds = userMsg.getUserChatMsgIdsByMsgId(lastMessageId + 1, limit, 'DOWN');
+				}
 			}
 		}
 
@@ -378,7 +382,7 @@ export class Msg extends PbMsg {
 		if (Account.UserIdAccountIdMap[user_id]) {
 			for (let i = 0; i < Account.UserIdAccountIdMap[user_id!].length; i++) {
 				const account = Account.UserIdAccountIdMap[user_id!][i];
-				Logger.log('[Broadcast]', account.getAccountId(), account.getUid);
+				console.log('[Broadcast]', account.getAccountId(), account.getUid);
 				if (user_id === account.getUid()) {
 					pdu.updateSeqNo(seqNum);
 				} else {
@@ -421,7 +425,10 @@ export class Msg extends PbMsg {
 	}
 
 	async updateAiMsg(role: AiChatRole) {
-		await kv.put(`M_A_${this.user_id}_${this.chatId}_${this.chatMsgId}_${role.toString()}`, '1');
+		await kv.put(
+			`M_A_${this.user_id}_${this.chatId}_${this.chatMsgId}_${role.toString()}`,
+			'1'
+		);
 	}
 
 	async getAiMsgIds() {
@@ -507,7 +514,9 @@ export class Msg extends PbMsg {
 		const keys = await this.getAiMsgIds();
 		for (let i = 0; i < keys.length; i++) {
 			const key = keys[i];
-			await kv.delete(`M_A_${this.user_id}_${this.chatId}_${key.chatMsgId}_${key.role.toString()}`);
+			await kv.delete(
+				`M_A_${this.user_id}_${this.chatId}_${key.chatMsgId}_${key.role.toString()}`
+			);
 		}
 	}
 

@@ -245,7 +245,7 @@ export class User extends PbUser {
 						}
 					}
 				}
-				Logger.log('lastMessage', msgId, chats[i]!.lastMessage);
+				console.log('lastMessage', msgId, chats[i]!.lastMessage);
 			}
 		} else {
 			chats = await User.getChatsByChatIds(chatIds);
