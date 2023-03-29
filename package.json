@@ -4,8 +4,9 @@
 	"version": "0.0.0",
 	"scripts": {
 		"deploy": "wrangler publish src/index.ts -c wrangler.prod.toml",
+		"deploy:bot": "wrangler publish src/index.ts -c wrangler.prod.toml --name bot",
 		"dev": "wrangler dev src/index.ts --local --persist-to=./wrangler-local-state",
-		"start-stackblitz": "WRANGLER_SEND_METRICS=false wrangler dev src/index.ts --local",
+		"dev:bot": "wrangler dev src/index.ts --port 1236 --local --persist-to=../worker-wai-chat/wrangler-local-state",
 		"log": "wrangler tail --format=pretty",
 		"test": "jest"
 	},
