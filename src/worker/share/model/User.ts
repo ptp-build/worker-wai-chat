@@ -22,6 +22,8 @@ import UserMsg from './UserMsg';
 import Logger from '../utils/Logger';
 import Account from '../Account';
 import { Bot } from './Bot';
+import { LoadChatsReq_Type } from '../../../lib/ptp/protobuf/PTPChats/types';
+import { getInitSystemBots, initSystemBot } from '../../controller/UserController';
 
 export class User extends PbUser {
 	public declare msg?: PbUser_Type;

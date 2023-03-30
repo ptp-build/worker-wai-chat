@@ -85,3 +85,9 @@ DIR_DIR_TS2=$PROJECT_DIR/../bot-wai-chat/src/lib/ptp/protobuf/
 echo copy to $DIR_DIR_TS2
 rm -rf $DIR_DIR_TS2
 cp -a $DIR_DIR_TS $DIR_DIR_TS2
+
+
+DIR_DIR_TS2=$PROJECT_DIR/../bot-wai-chat/src/lib/ptp/protobuf/
+echo copy to $DIR_DIR_TS2
+rm -rf $DIR_DIR_TS2
+cp -a $DIR_DIR_TS $DIR_DIR_TS2
