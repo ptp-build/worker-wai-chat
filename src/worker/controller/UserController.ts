@@ -1,17 +1,12 @@
 import { ENV } from '../helpers/env';
 import { User } from '../share/model/User';
-import { Bot } from '../share/model/Bot';
-import { Chat } from '../share/model/Chat';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import Account from '../share/Account';
 import UploadProfilePhotoReq from '../../lib/ptp/protobuf/PTPAuth/UploadProfilePhotoReq';
 import UploadProfilePhotoRes from '../../lib/ptp/protobuf/PTPAuth/UploadProfilePhotoRes';
-import { ERR, PbChatFolder_Type } from '../../lib/ptp/protobuf/PTPCommon/types';
+import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPAuth';
-import UserChat from '../share/model/UserChat';
 import { LoadChatsReq, LoadChatsRes } from '../../lib/ptp/protobuf/PTPChats';
-import UserMsg from '../share/model/UserMsg';
-import { Msg } from '../share/model/Msg';
 
 let initSystemBot_down = false;
 
@@ -20,9 +15,6 @@ export function getInitSystemBots() {
 	return [
 		{
 			id: USER_ID_BOT_FATHER,
-			menuButton: {
-				type: 'commands',
-			},
 			commands: [
 				{
 					botId: USER_ID_BOT_FATHER,
@@ -50,44 +42,15 @@ export async function initSystemBot(bots: any[], force?: boolean) {
 	initSystemBot_down = true;
 	for (let i = 0; i < bots.length; i++) {
 		const { id, first_name, user_name, isPremium, description, commands, menuButton } = bots[i];
-		let user = await User.getFromCache(id);
-		if (!user) {
-			const bot = new Bot({
-				botId: id,
-				menuButton,
-				commands,
-				description,
-			});
-			const userObj = new User();
-
-			userObj.setUserInfo({
-				phoneNumber: '',
-				isMin: false,
-				id,
-				firstName: first_name,
-				isPremium,
-				type: 'userTypeBot',
-				noStatus: true,
-				fullInfo: {
-					bio: description,
-				},
-			});
-			userObj.setUsernames(user_name);
-			userObj.setBotInfo(bot.getBotInfo());
-
-			await userObj.save();
-			const chat = new Chat();
-			chat.setChatInfo({
-				id,
-				title: first_name,
-				type: 'chatTypePrivate',
-				isVerified: true,
-			});
-			const userChat = new UserChat(id);
-			await userChat.init();
-			userChat.addUserChatIds(id);
-			await chat.save();
-		}
+		await User.createBot(
+			id,
+			user_name,
+			first_name,
+			description,
+			menuButton,
+			commands,
+			isPremium
+		);
 	}
 }
 

@@ -1,12 +1,19 @@
 import { ENV, kv } from '../../helpers/env';
 import { Chat } from './Chat';
 import { Msg } from './Msg';
-import { PbUser, PbUserSetting } from '../../../lib/ptp/protobuf/PTPCommon';
+import {
+	PbCommands,
+	PbMenuButton,
+	PbUser,
+	PbUserSetting,
+} from '../../../lib/ptp/protobuf/PTPCommon';
 import { Pdu } from '../../../lib/ptp/protobuf/BaseMsg';
 import {
 	PbBotInfo_Type,
 	PbChatFolder_Type,
+	PbCommands_Type,
 	PbFullInfo_Type,
+	PbMenuButton_Type,
 	PbUser_Type,
 	PbUserSetting_Type,
 } from '../../../lib/ptp/protobuf/PTPCommon/types';
@@ -16,6 +23,7 @@ import Logger from '../utils/Logger';
 import Account from '../Account';
 import { LoadChatsReq_Type } from '../../../lib/ptp/protobuf/PTPChats/types';
 import { getInitSystemBots, initSystemBot } from '../../controller/UserController';
+import { Bot } from './Bot';
 
 export class User extends PbUser {
 	public declare msg?: PbUser_Type;
@@ -389,5 +397,60 @@ export class User extends PbUser {
 			orderedPinnedIds: [],
 			totalChatCount: chatIds.length,
 		};
+	}
+	static async createBot(
+		botId: string,
+		userName: string,
+		botName: string = '',
+		description: string = '',
+		menuButton?: PbMenuButton_Type,
+		commands?: PbCommands_Type[],
+		isPremium: boolean = false
+	) {
+		let user = await User.getFromCache(botId);
+		if (!user) {
+			if (!menuButton) {
+				menuButton = {
+					type: 'commands',
+				};
+			}
+
+			const bot = new Bot({
+				botId,
+				menuButton,
+				commands,
+				description,
+			});
+			const userObj = new User();
+
+			userObj.setUserInfo({
+				phoneNumber: '',
+				isMin: false,
+				id: botId,
+				firstName: botName,
+				isPremium,
+				type: User.userTypeBot,
+				noStatus: true,
+				fullInfo: {
+					bio: description,
+				},
+			});
+
+			if (userName) {
+				userObj.setUsernames(userName);
+			}
+
+			userObj.setBotInfo(bot.getBotInfo());
+
+			await userObj.save();
+			const chat = new Chat();
+			chat.setChatInfo({
+				id: botId,
+				title: botName,
+				type: Chat.chatTypePrivate,
+				isVerified: true,
+			});
+			await chat.save();
+		}
 	}
 }
