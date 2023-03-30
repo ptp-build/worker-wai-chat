@@ -1,11 +1,12 @@
 import { User } from '../share/model/User';
-import { kv } from '../helpers/env';
+import { ENV, kv } from '../helpers/env';
 import { OpenAPIRoute, Path, Str } from '@cloudflare/itty-router-openapi';
 import { Chat } from '../share/model/Chat';
 import Account from '../share/Account';
 import UserMsg from '../share/model/UserMsg';
 import { Msg } from '../share/model/Msg';
 import ChatMsg from '../share/model/ChatMsg';
+import { getInitSystemBots, initSystemBot } from './UserController';
 
 export class UserGet extends OpenAPIRoute {
 	static schema = {
@@ -105,6 +106,30 @@ export class ChatGet extends OpenAPIRoute {
 	}
 }
 
+export class LoadChatsReq extends OpenAPIRoute {
+	static schema = {
+		tags: ['Chat'],
+		responses: {
+			'200': {
+				schema: {},
+			},
+		},
+	};
+
+	async handle(request: Request, data: Record<string, any>) {
+		const payload = await User.apiLoadChatReq(undefined, {
+			archived: false,
+			lastLocalServiceMessage: '',
+			limit: 0,
+			offsetDate: 0,
+			withPinned: false,
+		});
+		return {
+			...payload,
+		};
+	}
+}
+
 export class UserList extends OpenAPIRoute {
 	static schema = {
 		tags: ['User'],
@@ -118,6 +143,31 @@ export class UserList extends OpenAPIRoute {
 	async handle(request: Request, data: Record<string, any>) {
 		return {
 			userIds: Account.UserIdAccountIdMap,
+		};
+	}
+}
+
+export class PublicBots extends OpenAPIRoute {
+	static schema = {
+		tags: ['Bot'],
+		responses: {
+			'200': {
+				schema: {},
+			},
+		},
+	};
+
+	async handle(request: Request, data: Record<string, any>) {
+		await initSystemBot(getInitSystemBots());
+		const userIds = [ENV.USER_ID_BOT_FATHER];
+		const bots = [];
+		for (let i = 0; i < userIds.length; i++) {
+			const userId = userIds[i];
+			const user = await User.getFromCache(userId, true);
+			bots.push(user?.getUserInfo());
+		}
+		return {
+			bots,
 		};
 	}
 }

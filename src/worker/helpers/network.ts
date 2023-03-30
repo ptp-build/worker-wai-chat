@@ -1,7 +1,6 @@
 import { ENV } from './env';
 export function getCorsHeader() {
 	const { Access_Control_Allow_Origin } = ENV;
-	// const host =
 	return {
 		'content-type': 'application/json;charset=UTF-8',
 		'Access-Control-Allow-Origin': Access_Control_Allow_Origin,

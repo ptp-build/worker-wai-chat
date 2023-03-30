@@ -1,12 +1,17 @@
 import { TEXT_AI_THINKING } from '../../../../setting';
 import { sendMessageToChatGPT } from '../../../helpers/openai';
-import { PbBotInfo_Type, PbUser_Type } from '../../../../lib/ptp/protobuf/PTPCommon/types';
+import {
+	PbBotInfo_Type,
+	PbChat_Type,
+	PbUser_Type,
+} from '../../../../lib/ptp/protobuf/PTPCommon/types';
 import { AiChatHistory, AiChatRole } from '../../../../types';
 import { ENV } from '../../../helpers/env';
 import { Msg } from './index';
 import Logger from '../../utils/Logger';
-import { PbUser } from '../../../../lib/ptp/protobuf/PTPCommon';
+import { PbChat, PbUser } from '../../../../lib/ptp/protobuf/PTPCommon';
 import { User } from '../User';
+import { Chat } from '../Chat';
 
 export default class {
 	private user_id: string;
@@ -46,7 +51,7 @@ export default class {
 	}
 	async processCmd() {
 		const { msgModelBotReply, msgSendByUser, botInfo } = this;
-		if (botInfo.botId === ENV.USER_ID_CHATGPT) {
+		if (botInfo.botId === '1') {
 			switch (msgSendByUser.getMsgText()) {
 				case '/start':
 					await this.askChatGpt('你好');
@@ -114,13 +119,14 @@ export default class {
 		}
 	}
 	async process() {
+		const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
+
 		try {
-			const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
 			const resp: Response = await fetch(`${ENV.BOT_API}/bot`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer `,
+					'Authorization': `Bearer ${ENV.TEST_TOKEN}`,
 				},
 				body: JSON.stringify({
 					botInfo,
@@ -128,21 +134,29 @@ export default class {
 					msg: msgSendByUser.msg,
 				}),
 			});
-			const res: { reply?: string; botUser?: PbUser_Type } = await resp.json();
-			console.log(res);
+			const res: { reply?: string; botUser?: PbUser_Type; botChat?: PbChat_Type } =
+				await resp.json();
+			Logger.log(res);
 			if (res.reply) {
+				if (res.botChat) {
+					const chat = await Chat.getFromCache(res.botChat.id);
+					chat?.setChatInfo(res.botChat);
+					chat?.save().catch(console.error);
+					await msgModelBotReply.reply('updateChats', { chats: [res.botChat] });
+				}
+
 				if (res.botUser) {
-					console.log('[updateProfile]', res.botUser);
 					const user = await User.getFromCache(res.botUser.id);
-					// user?.setUserInfo(res.botUser);
-					// user?.save().catch(console.error);
-					await msgModelBotReply.reply('updateProfile', { user: res.botUser });
+					user?.setUserInfo(res.botUser);
+					user?.save().catch(console.error);
+					await msgModelBotReply.reply('updateUsers', { users: [res.botUser] });
 				}
 				await msgModelBotReply.sendText(res.reply);
 				await msgModelBotReply.save();
 			}
 		} catch (e) {
 			console.error(e);
+			await msgModelBotReply.sendText('bot api invoke error');
 		}
 		//
 		// const askText = msgSendByUser.getMsgText();

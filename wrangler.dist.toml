@@ -4,7 +4,6 @@ compatibility_date = "2022-05-03"
 node_compat = true
 
 [dev]
-port = 1235
 ip = "localhost"
 
 #
@@ -19,7 +18,8 @@ id = ""
 IS_PROD = true
 TEST_TOKEN = ""
 USER_ID_START = "623415"
-USER_ID_CHATGPT = "10001"
+USER_ID_SUPER_ADMIN = ""
+
 # 24H
 TOKEN_EXPIRE_TIME_SEC = 86400000
 JWT_SECRET = ""
@@ -33,3 +33,4 @@ GOOGLE_CLIENT_SECRET = ""
 OPENAI_API_KEY=""
 FRONTEND_URL = "https://xxxx.dev"
 Access_Control_Allow_Origin="https://xxxx.dev"
+BOT_API='http://localhost:1236/api',

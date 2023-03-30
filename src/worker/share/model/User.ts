@@ -14,6 +14,8 @@ import UserChat from './UserChat';
 import UserMsg from './UserMsg';
 import Logger from '../utils/Logger';
 import Account from '../Account';
+import { LoadChatsReq_Type } from '../../../lib/ptp/protobuf/PTPChats/types';
+import { getInitSystemBots, initSystemBot } from '../../controller/UserController';
 
 export class User extends PbUser {
 	public declare msg?: PbUser_Type;
@@ -120,7 +122,7 @@ export class User extends PbUser {
 					channels: false,
 					title: 'Bot',
 					pinnedChatIds: [],
-					includedChatIds: User.getPublicBots(),
+					includedChatIds: [],
 					excludedChatIds: [],
 				},
 			},
@@ -237,18 +239,75 @@ export class User extends PbUser {
 	isBot() {
 		return !!this.msg?.fullInfo?.botInfo;
 	}
-	static getPublicBots() {
-		const { USER_IDS_PUBLIC, IS_PROD, USER_ID_BOT_DEV } = ENV;
-		if (!IS_PROD) {
-			USER_IDS_PUBLIC.push(USER_ID_BOT_DEV);
+
+	static async getPublicBotIds(force?: boolean) {
+		const { USER_ID_BOT_FATHER } = ENV;
+		let botIds = await kv.get('BOTS_PUB', force);
+		if (botIds) {
+			botIds = JSON.parse(botIds);
+		} else {
+			botIds = [];
 		}
-		return USER_IDS_PUBLIC;
+		if (!botIds.includes(USER_ID_BOT_FATHER)) {
+			botIds.push(USER_ID_BOT_FATHER);
+		}
+		return botIds;
 	}
 
-	static async loadChats(user_id?: string) {
-		let chatIds = User.getPublicBots();
+	static async setPublicBotIds(botIds: string[]) {
+		await kv.put('BOTS_PUB', JSON.stringify(botIds));
+	}
+
+	static async addPublicBotId(botId: string) {
+		const botIds = await User.getPublicBotIds();
+		if (!botIds.includes(botId)) {
+			botIds.push(botId);
+			await kv.put('BOTS_PUB', JSON.stringify(botIds));
+		}
+	}
+
+	static async init(user_id: string) {
+		let user = await User.getFromCache(user_id);
+		if (!user) {
+			user = new User({
+				id: user_id,
+				type: User.userTypeRegular,
+				phoneNumber: '',
+			});
+			await user.save();
+			const publicBotIds = await User.getPublicBotIds();
+			const chatFolder = User.getDefaultChatFolder();
+			chatFolder.byId['1'].includedChatIds = publicBotIds;
+			const chatFolders: PbChatFolder_Type[] = Object.values(chatFolder.byId);
+			await user.saveUserSetting({
+				chatFolders: chatFolders,
+				chatFolderOrderedIds: [0, 1],
+				myBotIds: [],
+				myGroups: [],
+			});
+		}
+		let chat = await Chat.getFromCache(user_id);
+		if (!chat) {
+			chat = new Chat();
+			chat.setChatInfo({
+				id: user_id,
+				type: 'chatTypePrivate',
+				title: '',
+			});
+			await chat.save();
+			const userChat = new UserChat(user_id);
+			userChat.addUserChatIds(user_id);
+		}
+		return user;
+	}
+
+	static async apiLoadChatReq(user_id?: string, loadChatsReq?: LoadChatsReq_Type) {
+		await initSystemBot(getInitSystemBots());
+		const publicBotIds = await User.getPublicBotIds();
+		let chatIds = publicBotIds;
 		let userStatusesById: Record<string, any> = {};
 		let chatFolders: any = User.getDefaultChatFolder();
+
 		let chats = [];
 		if (user_id) {
 			const user = await User.init(user_id);
@@ -260,11 +319,14 @@ export class User extends PbUser {
 			});
 			chatFolders.orderedIds = userSetting.chatFolderOrderedIds!;
 			const chatIds1 = await User.getChatIds(user_id);
-			if (!chatIds1!.includes(user_id)) {
-				chatIds1!.push(user_id);
+			if (!chatIds!.includes(user_id)) {
+				chatIds!.push(user_id);
 			}
-
-			chatIds = chatIds.concat(chatIds1!);
+			chatIds1?.forEach(chatId => {
+				if (!chatIds.includes(chatId)) {
+					chatIds.push(chatId);
+				}
+			});
 			chats = await User.getChatsByChatIds(chatIds);
 			for (let i = 0; i < chats.length; i++) {
 				const chat = chats[i];
@@ -282,12 +344,11 @@ export class User extends PbUser {
 						}
 					}
 				}
-				console.log('lastMessage', msgId, chats[i]!.lastMessage);
 			}
 		} else {
+			chatFolders.byId['1'].includedChatIds = publicBotIds;
 			chats = await User.getChatsByChatIds(chatIds);
 		}
-
 		const users = [];
 		for (let i = 0; i < chatIds.length; i++) {
 			if (chatIds.indexOf('-') === -1) {
@@ -318,7 +379,6 @@ export class User extends PbUser {
 			}
 		}
 		return {
-			publicBotIds: User.getPublicBots(),
 			userStatusesById,
 			users,
 			chats,
@@ -329,41 +389,5 @@ export class User extends PbUser {
 			orderedPinnedIds: [],
 			totalChatCount: chatIds.length,
 		};
-	}
-	static async init(user_id: string) {
-		let user = await User.getFromCache(user_id);
-		if (!user) {
-			user = new User({
-				id: user_id,
-				type: User.userTypeRegular,
-				phoneNumber: '',
-			});
-			await user.save();
-
-			const chatFolders: PbChatFolder_Type[] = [];
-			Object.keys(User.getDefaultChatFolder().byId).forEach(key => {
-				// @ts-ignore
-				chatFolders.push(User.getDefaultChatFolder().byId[key]);
-			});
-			await user.saveUserSetting({
-				chatFolders: chatFolders,
-				chatFolderOrderedIds: [0, 1],
-				myBotIds: [],
-				myGroups: [],
-			});
-		}
-		let chat = await Chat.getFromCache(user_id);
-		if (!chat) {
-			chat = new Chat();
-			chat.setChatInfo({
-				id: user_id,
-				type: 'chatTypePrivate',
-				title: '',
-			});
-			await chat.save();
-			const userChat = new UserChat(user_id);
-			userChat.addUserChatIds(user_id);
-		}
-		return user;
 	}
 }

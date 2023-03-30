@@ -1,11 +1,10 @@
 import { genUserId } from '../AuthController';
 import { randomize } from 'worktop/utils';
 import {
-	getInitSystemBots,
-	initSystemBot,
 	uploadProfilePhotoReq,
 	updateProfile,
 	updateUsername,
+	apiLoadChatsReq,
 } from '../UserController';
 import { ENV, kv } from '../../helpers/env';
 import Account from '../../share/Account';
@@ -57,7 +56,7 @@ async function handleSession(websocket: WebSocket) {
 			let pduRsp: Pdu | undefined = undefined;
 			switch (pdu.getCommandId()) {
 				case ActionCommands.CID_AuthStep1Req:
-					await initSystemBot(getInitSystemBots());
+					// await initSystemBot(getInitSystemBots());
 					const authStep1Req = AuthStep1Req.parseMsg(pdu);
 					p = Buffer.from(authStep1Req.p);
 					captcha = Buffer.from(randomize(4));
@@ -161,7 +160,9 @@ async function handleSession(websocket: WebSocket) {
 						}).pack();
 						break;
 					}
-					const uid_cache = await accountServer.getUidFromCacheByAddress(authLoginReq.address);
+					const uid_cache = await accountServer.getUidFromCacheByAddress(
+						authLoginReq.address
+					);
 					// console.log("uid_cache => ",uid_cache,authLoginReq.uid)
 					if (uid_cache && uid_cache !== authLoginReq.uid) {
 						pduRsp = new AuthLoginRes({
@@ -288,14 +289,7 @@ export async function _ApiMsg(pdu: Pdu, account: Account) {
 				await msgHandler(pdu, account);
 				break;
 			case ActionCommands.CID_LoadChatsReq:
-				await initSystemBot(getInitSystemBots());
-				const loadChatsReq = LoadChatsReq.parseMsg(pdu);
-				// console.log(">>>loadChatsReq",loadChatsReq)
-				let user_id = account.getUid() || undefined;
-				pduRsp = new LoadChatsRes({
-					err: ERR.NO_ERROR,
-					payload: JSON.stringify(await User.loadChats(user_id)),
-				}).pack();
+				await apiLoadChatsReq(pdu, account);
 				break;
 			default:
 				break;

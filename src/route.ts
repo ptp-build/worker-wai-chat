@@ -24,7 +24,12 @@ router.all('*', (request: Request) => {
 });
 
 router.post('/api/bot', BotController.Bot);
+
+router.get('/api/bot/public', ApiController.PublicBots);
+
 router.get('/api/chat/:chatId', ApiController.ChatGet);
+router.get('/api/LoadChatsReq', ApiController.LoadChatsReq);
+
 router.get('/api/chatMsg/:userId/:chatId', ApiController.ChatMsgGet);
 router.get('/api/user/:userId', ApiController.UserGet);
 router.get('/api/users', ApiController.UserList);
