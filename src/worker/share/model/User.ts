@@ -11,18 +11,16 @@ import { Pdu } from '../../../lib/ptp/protobuf/BaseMsg';
 import {
 	PbBotInfo_Type,
 	PbChatFolder_Type,
-	PbCommands_Type,
 	PbFullInfo_Type,
 	PbMenuButton_Type,
 	PbUser_Type,
 	PbUserSetting_Type,
+	PbCommands_Type,
 } from '../../../lib/ptp/protobuf/PTPCommon/types';
 import UserChat from './UserChat';
 import UserMsg from './UserMsg';
 import Logger from '../utils/Logger';
 import Account from '../Account';
-import { LoadChatsReq_Type } from '../../../lib/ptp/protobuf/PTPChats/types';
-import { getInitSystemBots, initSystemBot } from '../../controller/UserController';
 import { Bot } from './Bot';
 
 export class User extends PbUser {
@@ -108,6 +106,10 @@ export class User extends PbUser {
 
 	getUserInfo() {
 		const { fullInfo, ...msg } = this.msg!;
+		if (msg.photos && msg.photos.id) {
+			// @ts-ignore
+			msg.photos = [msg.photos];
+		}
 		return {
 			accessHash: '',
 			firstName: '',
@@ -150,6 +152,7 @@ export class User extends PbUser {
 		}
 	}
 	async saveUserSetting(userSetting: PbUserSetting_Type) {
+		Logger.log('saveUserSetting', userSetting);
 		await kv.put(
 			`US_${this.msg!.id}`,
 			Buffer.from(new PbUserSetting(userSetting).pack().getPbData()).toString('hex')
@@ -270,7 +273,6 @@ export class User extends PbUser {
 	static async setPublicBotIds(botIds: string[]) {
 		await kv.put('BOTS_PUB', JSON.stringify(botIds));
 	}
-
 	static async addPublicBotId(botId: string) {
 		const botIds = await User.getPublicBotIds();
 		if (!botIds.includes(botId)) {
@@ -279,12 +281,12 @@ export class User extends PbUser {
 		}
 	}
 
-	static async init(user_id: string) {
+	static async init(user_id: string, type: string = User.userTypeRegular) {
 		let user = await User.getFromCache(user_id);
 		if (!user) {
 			user = new User({
 				id: user_id,
-				type: User.userTypeRegular,
+				type: type,
 				phoneNumber: '',
 			});
 			await user.save();

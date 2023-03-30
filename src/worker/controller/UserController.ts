@@ -1,14 +1,11 @@
 import { ENV } from '../helpers/env';
 import { User } from '../share/model/User';
-import { Bot } from '../share/model/Bot';
-import { Chat } from '../share/model/Chat';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import Account from '../share/Account';
 import UploadProfilePhotoReq from '../../lib/ptp/protobuf/PTPAuth/UploadProfilePhotoReq';
 import UploadProfilePhotoRes from '../../lib/ptp/protobuf/PTPAuth/UploadProfilePhotoRes';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPAuth';
-import UserChat from '../share/model/UserChat';
 import { LoadChatsReq, LoadChatsRes } from '../../lib/ptp/protobuf/PTPChats';
 
 let initSystemBot_down = false;

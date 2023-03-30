@@ -34,6 +34,14 @@ export type MsgType =
 	| 'clearHistory';
 
 export class Msg extends PbMsg {
+	static MsgActionType = {
+		historyClear: 'historyClear',
+		contactSignUp: 'contactSignUp',
+		chatCreate: 'chatCreate',
+		topicCreate: 'topicCreate',
+		suggestProfilePhoto: 'suggestProfilePhoto',
+		other: 'other',
+	};
 	public declare msg?: PbMsg_Type;
 	private chatId?: string;
 	private user_id?: string;
@@ -426,6 +434,13 @@ export class Msg extends PbMsg {
 		}
 	}
 
+	getMsgPhoto() {
+		if (this.msg && this.msg.content.photo) {
+			return this.msg.content.photo;
+		} else {
+			return undefined;
+		}
+	}
 	getLastMsgText() {
 		if (this.msg && this.msg.content.text && this.msg.content.text.text) {
 			return this.msg.content.text.text;

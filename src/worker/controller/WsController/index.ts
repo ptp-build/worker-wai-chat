@@ -21,11 +21,9 @@ import {
 	AuthStep2Res,
 } from '../../../lib/ptp/protobuf/PTPAuth';
 import { ERR } from '../../../lib/ptp/protobuf/PTPCommon/types';
-import { LoadChatsReq, LoadChatsRes } from '../../../lib/ptp/protobuf/PTPChats';
 import { OtherNotify } from '../../../lib/ptp/protobuf/PTPOther';
 import { msgHandler } from '../MsgController';
 import { User } from '../../share/model/User';
-import Logger from '../../share/utils/Logger';
 
 export let TASK_EXE_USER_ID = '';
 

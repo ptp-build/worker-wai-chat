@@ -38,6 +38,15 @@ export default class UserChat {
 		UserChat.userChatIds.set(this.user_id, chatIds);
 	}
 
+	async removeUserChatId(chatId: string) {
+		const chatIds = this.getUserChatIds();
+		if (chatIds) {
+			if (chatIds.includes(chatId)) {
+				this.setUserChatIds(chatIds.filter(id => id !== chatId));
+				await this.saveUserChatIdsToKv();
+			}
+		}
+	}
 	addUserChatIds(chatId: string) {
 		const chatIds = this.getUserChatIds();
 		if (chatIds) {
