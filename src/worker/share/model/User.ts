@@ -69,6 +69,9 @@ export class User extends PbUser {
 		return photo;
 	}
 	setUserInfo(user: any) {
+		if (user.photos && user.photos.id) {
+			user.photos = [user.photos];
+		}
 		this.msg = {
 			id: user.id,
 			accessHash: user.accessHash || '',
@@ -154,11 +157,13 @@ export class User extends PbUser {
 	}
 
 	async getUserSetting() {
-		const str = await kv.get(`US_${this.msg!.id}`);
-		return PbUserSetting.parseMsg(new Pdu(Buffer.from(str, 'hex')));
+		const str = await kv.get(`US_${this.msg!.id}`, true);
+		if (str) {
+			return PbUserSetting.parseMsg(new Pdu(Buffer.from(str, 'hex')));
+		} else {
+			return undefined;
+		}
 	}
-	static UserChatIds: Record<string, string[]> = {};
-
 	static async getChatIds(user_id: string) {
 		const userChat = new UserChat(user_id!);
 		await userChat.init();
@@ -319,7 +324,10 @@ export class User extends PbUser {
 		let chats = [];
 		if (user_id) {
 			const user = await User.init(user_id);
-			const userSetting = await user.getUserSetting();
+			let userSetting = await user.getUserSetting();
+			if (!userSetting) {
+				userSetting = {};
+			}
 			userSetting.chatFolders?.forEach((item: PbChatFolder_Type) => {
 				item.pinnedChatIds = [];
 				item.excludedChatIds = [];

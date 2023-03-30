@@ -23,7 +23,7 @@ router.all('*', (request: Request) => {
 	}
 });
 
-router.post('/api/bot', BotController.Bot);
+router.post('/api/bot', BotController.BotController);
 
 router.get('/api/bot/public', ApiController.PublicBots);
 

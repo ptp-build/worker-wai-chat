@@ -1,4 +1,5 @@
 export { default as FileInfo } from './FileInfo';
+export { default as PbAction } from './PbAction';
 export { default as PbBotInfo } from './PbBotInfo';
 export { default as PbChat } from './PbChat';
 export { default as PbChatFolder } from './PbChatFolder';

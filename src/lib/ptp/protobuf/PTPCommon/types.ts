@@ -24,6 +24,11 @@ export interface FileInfo_Type {
   type: string;
 }
 
+export interface PbAction_Type {
+  text: string;
+  type: string;
+}
+
 export interface PbBotInfo_Type {
   botId: string;
   description?: string;
@@ -75,6 +80,7 @@ export interface PbContent_Type {
   text?: PbText_Type;
   photo?: PbPhoto_Type;
   voice?: PbVoice_Type;
+  action?: PbAction_Type;
 }
 
 export interface PbFullInfo_Type {

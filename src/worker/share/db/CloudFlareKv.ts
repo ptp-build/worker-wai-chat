@@ -13,6 +13,7 @@ export default class CloudFlareKv {
 	}
 
 	async get(key: string, force?: boolean) {
+		force = true;
 		if (!force && CloudFlareKv.cache[key] !== undefined) {
 			return CloudFlareKv.cache[key];
 		} else {

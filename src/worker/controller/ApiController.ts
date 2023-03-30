@@ -1,6 +1,6 @@
 import { User } from '../share/model/User';
 import { ENV, kv } from '../helpers/env';
-import { OpenAPIRoute, Path, Str } from '@cloudflare/itty-router-openapi';
+import { OpenAPIRoute, Path, Query, Str } from '@cloudflare/itty-router-openapi';
 import { Chat } from '../share/model/Chat';
 import Account from '../share/Account';
 import UserMsg from '../share/model/UserMsg';
@@ -109,6 +109,12 @@ export class ChatGet extends OpenAPIRoute {
 export class LoadChatsReq extends OpenAPIRoute {
 	static schema = {
 		tags: ['Chat'],
+		parameters: {
+			userId: Query(Str, {
+				description: 'User Id',
+				default: '10000',
+			}),
+		},
 		responses: {
 			'200': {
 				schema: {},
@@ -117,7 +123,8 @@ export class LoadChatsReq extends OpenAPIRoute {
 	};
 
 	async handle(request: Request, data: Record<string, any>) {
-		const payload = await User.apiLoadChatReq(undefined, {
+		const { userId } = data;
+		const payload = await User.apiLoadChatReq(userId, {
 			archived: false,
 			lastLocalServiceMessage: '',
 			limit: 0,

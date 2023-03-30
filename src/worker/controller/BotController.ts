@@ -8,7 +8,7 @@ import Logger from '../share/utils/Logger';
 import { kv } from '../helpers/env';
 import { User } from '../share/model/User';
 
-export class Bot extends OpenAPIRoute {
+export class BotController extends OpenAPIRoute {
 	static schema = {
 		tags: ['Bot'],
 		responses: {

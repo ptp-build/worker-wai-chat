@@ -21,6 +21,11 @@ export function getInitSystemBots() {
 					command: 'start',
 					description: 'Start Chat',
 				},
+				{
+					botId: USER_ID_BOT_FATHER,
+					command: 'createBot',
+					description: 'Create a Bot',
+				},
 			],
 			first_name: 'Bot Father',
 			user_name: 'BotFather',

@@ -663,6 +663,9 @@ var $conv_message = $createConverter([
                 FileInfo: {
                     '$': {"1":["id","string",""],"2":["size","uint64",{"low":0,"high":0,"unsigned":true}],"3":["part","uint32",0],"4":["part_total","uint32",0],"5":["buf","bytes",[]],"6":["type","string",""]}
                 },
+                PbAction: {
+                    '$': {"1":["text","string",""],"2":["type","string",""]}
+                },
                 PbBotInfo: {
                     '$': {"1":["botId","string",""],"2":["description","string",""],"3":["isChatGpt","bool",false],"4":["menuButton","default.PTP.Common.PbMenuButton",null],"5":["commands","<default.PTP.Common.PbCommands",null]}
                 },
@@ -679,7 +682,7 @@ var $conv_message = $createConverter([
                     '$': {"1":["botId","string",""],"2":["command","string",""],"3":["description","string",""]}
                 },
                 PbContent: {
-                    '$': {"1":["text","default.PTP.Common.PbText",null],"2":["photo","default.PTP.Common.PbPhoto",null],"3":["voice","default.PTP.Common.PbVoice",null]}
+                    '$': {"1":["text","default.PTP.Common.PbText",null],"2":["photo","default.PTP.Common.PbPhoto",null],"3":["voice","default.PTP.Common.PbVoice",null],"4":["action","default.PTP.Common.PbAction",null]}
                 },
                 PbFullInfo: {
                     '$': {"1":["bio","string",""],"2":["commonChatsCount","uint32",0],"3":["isBlocked","bool",false],"4":["noVoiceMessages","bool",false],"5":["botInfo","default.PTP.Common.PbBotInfo",null],"6":["pinnedMessageId","uint32",0]}

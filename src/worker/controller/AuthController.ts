@@ -34,7 +34,7 @@ export async function GithubRedirect(request: Request) {
 }
 
 export async function genUserId() {
-	let value = await kv.get('USER_INCR');
+	let value = await kv.get('USER_INCR', true);
 	if (!value) {
 		value = parseInt(ENV.USER_ID_START);
 	} else {
@@ -92,14 +92,19 @@ export async function GithubCallback(request: Request) {
 		return new Response('', {
 			status: 302,
 			headers: {
-				location: `${FRONTEND_URL}/?${queryString.stringify({ code, email: authUser.email })}`,
+				location: `${FRONTEND_URL}/?${queryString.stringify({
+					code,
+					email: authUser.email,
+				})}`,
 			},
 		});
 	} catch (e) {
 		return new Response('error', {
 			status: 302,
 			headers: {
-				location: `${FRONTEND_URL}/?${queryString.stringify({ err_msg: 'OAuth Login Error' })}`,
+				location: `${FRONTEND_URL}/?${queryString.stringify({
+					err_msg: 'OAuth Login Error',
+				})}`,
 			},
 		});
 	}
@@ -177,14 +182,19 @@ export async function GoogleCallback(request: Request) {
 		return new Response('', {
 			status: 302,
 			headers: {
-				location: `${FRONTEND_URL}/?${queryString.stringify({ code, email: authUser.email })}`,
+				location: `${FRONTEND_URL}/?${queryString.stringify({
+					code,
+					email: authUser.email,
+				})}`,
 			},
 		});
 	} catch (e) {
 		return new Response('error', {
 			status: 302,
 			headers: {
-				location: `${FRONTEND_URL}/?${queryString.stringify({ err_msg: 'OAuth Login Error' })}`,
+				location: `${FRONTEND_URL}/?${queryString.stringify({
+					err_msg: 'OAuth Login Error',
+				})}`,
 			},
 		});
 	}

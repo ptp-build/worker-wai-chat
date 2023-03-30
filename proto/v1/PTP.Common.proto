@@ -160,10 +160,16 @@ message PbVoice {
   optional uint32 duration = 3;
 }
 
+message PbAction {
+  required string text = 1;
+  required string type = 2;
+}
+
 message PbContent {
   optional PbText text = 1;
   optional PbPhoto photo = 2;
   optional PbVoice voice = 3;
+  optional PbAction action = 4;
 }
 
 message PbMsg {

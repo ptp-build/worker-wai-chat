@@ -23,12 +23,15 @@ import UserMsg from '../UserMsg';
 import Logger from '../../utils/Logger';
 import Account from '../../Account';
 
-type MsgType =
+export type MsgType =
 	| 'newMessage'
 	| 'updateMessageSendSucceeded'
 	| 'updateMessage'
-	| 'updateUsers'
-	| 'updateChats';
+	| 'updateGlobal'
+	| 'createBot'
+	| 'loadChats'
+	| 'removeBot'
+	| 'clearHistory';
 
 export class Msg extends PbMsg {
 	public declare msg?: PbMsg_Type;

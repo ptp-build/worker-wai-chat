@@ -144,4 +144,8 @@ export default class UserMsg {
 			this.saveUserChatMsgIdsToKv().catch(console.error);
 		}
 	}
+	clear() {
+		this.setUserChatMsgIds(new Map());
+		this.saveUserChatMsgIdsToKv().catch(console.error);
+	}
 }
