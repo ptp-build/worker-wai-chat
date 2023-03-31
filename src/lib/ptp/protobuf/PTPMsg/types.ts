@@ -5,7 +5,7 @@ export interface MsgDeleteReq_Type {
   user_id: string;
   chat_id: string;
   msg_ids?: number[];
-  revoke?: boolean[];
+  revoke?: boolean;
 }
 export interface MsgDeleteRes_Type {
   err: PTPCommon.ERR;

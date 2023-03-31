@@ -746,7 +746,7 @@ var $conv_message = $createConverter([
             },
             Msg: {
                 MsgDeleteReq: {
-                    '$': {"1":["user_id","string",""],"2":["chat_id","string",""],"3":["msg_ids","[uint32",null],"4":["revoke","[bool",null]}
+                    '$': {"1":["user_id","string",""],"2":["chat_id","string",""],"3":["msg_ids","[uint32",null],"4":["revoke","bool",false]}
                 },
                 MsgDeleteRes: {
                     '$': {"100":["err","uint32",0]}

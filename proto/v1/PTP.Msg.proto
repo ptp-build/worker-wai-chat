@@ -30,7 +30,7 @@ message MsgDeleteReq{
   required string user_id = 1;
   required string chat_id = 2;
   repeated uint32 msg_ids = 3;
-  repeated bool revoke = 4;
+  optional bool revoke = 4;
 }
 
 message MsgDeleteRes{
