@@ -1,7 +1,7 @@
 import WsController from './worker/controller/WsController';
 import ProtoController from './worker/controller/ProtoController';
 import TestController from './worker/controller/TestController';
-import TaskController from './worker/controller/TaskController';
+import * as TaskController from './worker/controller/TaskController';
 
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
 import { ENV } from './worker/env';

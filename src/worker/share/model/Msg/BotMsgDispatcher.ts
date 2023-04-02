@@ -1,11 +1,11 @@
 import { PbBotInfo_Type } from '../../../../lib/ptp/protobuf/PTPCommon/types';
-import { ENV } from '../../../helpers/env';
 import { Msg } from './index';
 import Logger from '../../utils/Logger';
 import UserMsg from '../UserMsg';
 import BotWorker from './BotWorker';
 import { BotWorkerResult } from '../../../../types';
 import { AnswerCallbackButtonReq_Type } from '../../../../lib/ptp/protobuf/PTPMsg/types';
+import { ENV } from '../../../env';
 
 export default class {
 	private user_id: string;
@@ -53,6 +53,7 @@ export default class {
 				});
 				res = await resp.json();
 			} else {
+				// @ts-ignore
 				res = await new BotWorker({
 					botInfo,
 					user_id,

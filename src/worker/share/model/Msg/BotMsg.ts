@@ -26,11 +26,11 @@ export default class {
 		const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
 
 		try {
-			const resp: Response = await fetch(`${ENV.BOT_API}/bot`, {
+			const resp: Response = await fetch(`${ENV.BOT_WORKER_API}/bot`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${ENV.TEST_TOKEN}`,
+					'Authorization': `Bearer ${ENV.WAI_WORKER_API_TOKEN}`,
 				},
 				body: JSON.stringify({
 					botInfo,
