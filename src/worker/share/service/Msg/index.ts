@@ -440,11 +440,8 @@ export class Msg extends PbMsg {
 		this.chatMsgId = await this.chatMsg?.genMsgId();
 	}
 
-	async updateAiMsg(role: AiChatRole) {
-		await kv.put(
-			`M_A_${this.user_id}_${this.chatId}_${this.chatMsgId}_${role.toString()}`,
-			'1'
-		);
+	static async updateAiMsg(user_id: string, chatId: string, chatMsgId: number, role: AiChatRole) {
+		await kv.put(`M_A_${user_id}_${chatId}_${chatMsgId}_${role.toString()}`, '1');
 	}
 
 	async getAiMsgIds() {

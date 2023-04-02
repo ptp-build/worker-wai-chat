@@ -585,12 +585,16 @@ export default class {
 		const history = await msgSendByUser.getAiMsgHistory();
 		console.log(msgSendByUser.getMsgText());
 
-		let [error, reply] = await sendMessageToChatGPT(askText, [...init_history, ...history]);
+		let [error, reply] = await sendMessageToChatGPT(
+			askText,
+			[...init_history, ...history],
+			aiConfig.api_key || ENV.OPENAI_API_KEY,
+			{}
+		);
 		if (!error) {
 			reply = reply.replace('```html', '```');
 			console.log(reply);
 			return {
-				isAi: true,
 				reply,
 			};
 		} else {

@@ -33,8 +33,14 @@ export default class {
 	}
 	async process() {
 		const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
+		const aiConfig = await msgSendByUser?.getAiConfig();
+
 		try {
 			const msg = msgSendByUser?.getMsg();
+
+			if (aiConfig && this.answerCallbackButtonReq) {
+				msgSendByUser?.sendText('...');
+			}
 
 			let res: BotWorkerResult;
 			if (ENV.BOT_WORKER_API) {
@@ -84,6 +90,9 @@ export default class {
 					break;
 			}
 			await this.reply(res, delay);
+
+			if (aiConfig && this.answerCallbackButtonReq) {
+			}
 		} catch (e) {
 			console.error(e);
 			await msgModelBotReply.sendText('bot api invoke error');
