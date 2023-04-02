@@ -1,10 +1,9 @@
-import { getCorsHeader } from '../helpers/network';
 import { DownloadReq, DownloadRes, UploadReq } from '../../lib/ptp/protobuf/PTPFile';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
-import { storage } from '../helpers/env';
+import { storage } from '../env';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { FileInfo } from '../../lib/ptp/protobuf/PTPCommon';
-import Logger from '../share/utils/Logger';
+import { getCorsHeader } from '../share/utils/utils';
 
 export async function Upload(pdu: Pdu) {
 	const req = UploadReq.parseMsg(pdu);
@@ -32,7 +31,10 @@ export async function Download(pdu: Pdu) {
 			if (!fileInfo) {
 				fileInfo = fileInfo1;
 			} else {
-				fileInfo.buf = Buffer.concat([Buffer.from(fileInfo.buf), Buffer.from(fileInfo1.buf)]);
+				fileInfo.buf = Buffer.concat([
+					Buffer.from(fileInfo.buf),
+					Buffer.from(fileInfo1.buf),
+				]);
 			}
 			if (fileInfo1.part_total && fileInfo1.part_total > 1) {
 				if (fileInfo1.part_total === i) {

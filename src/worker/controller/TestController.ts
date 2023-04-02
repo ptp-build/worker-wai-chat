@@ -1,13 +1,12 @@
-import { ResponseJson } from '../helpers/network';
 import * as utils from 'worktop/utils';
-import { ENV, kv, storage } from '../helpers/env';
+import { ENV, kv, storage } from '../env';
 import { RequestForm } from '../../types';
 import { Msg } from '../share/model/Msg';
-import { getInitSystemBots, initSystemBot, resetInitSystemBot_down } from './UserController';
 import { Chat } from '../share/model/Chat';
 import { User } from '../share/model/User';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import { PbMsg } from '../../lib/ptp/protobuf/PTPCommon';
+import { ResponseJson } from '../share/utils/utils';
 
 export default async function (request: Request) {
 	const WAI_WORKER_API_TOKEN = ENV.WAI_WORKER_API_TOKEN;

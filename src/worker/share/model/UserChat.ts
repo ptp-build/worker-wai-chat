@@ -1,4 +1,4 @@
-import { kv } from '../../helpers/env';
+import { kv } from '../../env';
 
 export default class UserChat {
 	private readonly user_id: string;

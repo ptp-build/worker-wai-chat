@@ -5,8 +5,7 @@ import {
 	PbMsg_Type,
 	PbPhoto_Type,
 } from '../../../../lib/ptp/protobuf/PTPCommon/types';
-import { ENV, kv } from '../../../helpers/env';
-import { USER_CONFIG } from '../../../helpers/context';
+import { ENV, kv } from '../../../env';
 import {
 	Pdu,
 	popByteBuffer,
@@ -478,7 +477,7 @@ export class Msg extends PbMsg {
 	}
 
 	getChatGptInitMsg(config?: PbChatGpBotConfig_Type): AiChatHistory[] {
-		let content = USER_CONFIG.SYSTEM_INIT_MESSAGE;
+		let content = ENV.SYSTEM_INIT_MESSAGE;
 		if (config && config.init_system_content) {
 			content = config.init_system_content;
 		}
@@ -541,7 +540,7 @@ export class Msg extends PbMsg {
 		const config = await this.getAiConfig();
 		return config && 'init_system_content' in config && config.init_system_content
 			? config?.init_system_content
-			: USER_CONFIG.SYSTEM_INIT_MESSAGE;
+			: ENV.SYSTEM_INIT_MESSAGE;
 	}
 
 	async setInitMsg(msg: string) {

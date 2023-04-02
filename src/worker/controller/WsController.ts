@@ -1,4 +1,3 @@
-import { genUserId } from './AuthController';
 import { randomize } from 'worktop/utils';
 import {
 	uploadProfilePhotoReq,
@@ -6,7 +5,7 @@ import {
 	updateUsername,
 	apiLoadChatsReq,
 } from './UserController';
-import { ENV, kv } from '../helpers/env';
+import { ENV, kv } from '../env';
 import Account from '../share/Account';
 import { ActionCommands, getActionCommandsName } from '../../lib/ptp/protobuf/ActionCommands';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
@@ -23,7 +22,7 @@ import {
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { OtherNotify } from '../../lib/ptp/protobuf/PTPOther';
 import { msgHandler } from './MsgController';
-import { User } from '../share/model/User';
+import { genUserId, User } from '../share/model/User';
 
 export let TASK_EXE_USER_ID = '';
 

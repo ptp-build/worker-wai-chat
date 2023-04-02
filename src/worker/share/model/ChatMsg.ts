@@ -1,4 +1,4 @@
-import { kv } from '../../helpers/env';
+import { kv } from '../../env';
 
 export default class ChatMsg {
 	private readonly chatId: string;

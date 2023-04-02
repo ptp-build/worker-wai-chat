@@ -1,4 +1,4 @@
-import { kv } from '../../helpers/env';
+import { kv } from '../../env';
 import Logger from '../utils/Logger';
 
 export default class UserMsg {
@@ -77,7 +77,7 @@ export default class UserMsg {
 			msgIds = await this.getUserChatMsgIdsFromKv();
 			this.setUserChatMsgIds(msgIds);
 		}
-		return msgIds && msgIds.has(msgId.toString()) ? msgIds.get(msgId.toString()) : 0;
+		return msgIds && msgId && msgIds.has(msgId.toString()) ? msgIds.get(msgId.toString()) : 0;
 	}
 
 	async saveUserChatMsgIdsToKv() {

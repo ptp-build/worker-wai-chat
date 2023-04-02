@@ -14,7 +14,7 @@ import { getActionCommandsName } from '../../lib/ptp/protobuf/ActionCommands';
 import { decrypt, encrypt } from 'ethereum-cryptography/aes';
 import { hashSha256 } from './utils/helpers';
 import Logger from './utils/Logger';
-import { kv } from '../helpers/env';
+import { kv } from '../env';
 
 const KEY_PREFIX = 'KEY_';
 const SESSION_PREFIX = 'SI_';

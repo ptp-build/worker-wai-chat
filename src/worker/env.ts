@@ -1,8 +1,8 @@
 import { HS256 } from 'worktop/jwt';
-import CloudFlareKv from '../share/db/CloudFlareKv';
-import CloudFlareR2 from '../share/storage/CloudFlareR2';
-import LocalStorage from '../share/db/LocalStorage';
-import Logger from '../share/utils/Logger';
+import CloudFlareKv from './share/db/CloudFlareKv';
+import CloudFlareR2 from './share/storage/CloudFlareR2';
+import LocalStorage from './share/db/LocalStorage';
+import Logger from './share/utils/Logger';
 
 export const ENV: {
 	IS_PROD: boolean;
@@ -28,12 +28,18 @@ export const ENV: {
 	AUTO_TRIM_HISTORY: boolean;
 	// 最大历史记录长度
 	MAX_HISTORY_LENGTH: number;
+	SYSTEM_INIT_MESSAGE: string;
+	OPENAI_API_EXTRA_PARAMS: Record<string, any>;
 } = {
 	IS_PROD: true,
 	BOT_WORKER_API: '',
+	// 系统初始化消息
+	SYSTEM_INIT_MESSAGE: '你是一个得力的助手,请使用中文进行我们的交流。',
+	// OpenAI API 额外参数
+	OPENAI_API_EXTRA_PARAMS: {},
+	WAI_WORKER_API_TOKEN: '',
 	KV_NAMESPACE_KEY: 'DATABASE_PROD',
 	TASK_EXE_USER_ID: '',
-	WAI_WORKER_API_TOKEN: '',
 	USER_ID_START: '623415',
 	USER_ID_BOT_FATHER: '10000',
 	USER_ID_SUPER_ADMIN: '',

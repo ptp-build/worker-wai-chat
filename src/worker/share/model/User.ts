@@ -1,4 +1,4 @@
-import { ENV, kv } from '../../helpers/env';
+import { ENV, kv } from '../../env';
 import { Chat } from './Chat';
 import { Msg } from './Msg';
 import {
@@ -215,6 +215,10 @@ export class User extends PbUser {
 			isActive,
 			isEditable,
 		});
+	}
+
+	getBotInfo() {
+		return this.getUserInfo().fullInfo.botInfo;
 	}
 
 	setBotInfo(botInfo: PbBotInfo_Type) {
@@ -465,4 +469,23 @@ export class User extends PbUser {
 			await chat.save();
 		}
 	}
+	async saveMyBot(botId: string) {
+		await kv.put(`${this.getUserInfo().id}_${botId}`, (+new Date()).toString());
+	}
+
+	async checkMyBot(botId: string) {
+		const str = await kv.get(`${this.getUserInfo().id}_${botId}`);
+		return str ? parseInt(str) : null;
+	}
+}
+
+export async function genUserId() {
+	let value = await kv.get('USER_INCR', true);
+	if (!value) {
+		value = parseInt(ENV.USER_ID_START);
+	} else {
+		value = parseInt(value) + 1;
+	}
+	await kv.put('USER_INCR', value.toString());
+	return value.toString();
 }

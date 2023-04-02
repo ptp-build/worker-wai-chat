@@ -1,4 +1,4 @@
-import { kv } from '../../helpers/env';
+import { kv } from '../../env';
 import { PbChat } from '../../../lib/ptp/protobuf/PTPCommon';
 import { Pdu } from '../../../lib/ptp/protobuf/BaseMsg';
 import { PbChat_Type } from '../../../lib/ptp/protobuf/PTPCommon/types';

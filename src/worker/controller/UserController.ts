@@ -1,4 +1,4 @@
-import { ENV } from '../helpers/env';
+import { ENV } from '../env';
 import { User } from '../share/model/User';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import Account from '../share/Account';
@@ -7,26 +7,29 @@ import UploadProfilePhotoRes from '../../lib/ptp/protobuf/PTPAuth/UploadProfileP
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPAuth';
 import { LoadChatsReq, LoadChatsRes } from '../../lib/ptp/protobuf/PTPChats';
+import { BOT_FATHER_COMMANDS } from '../../setting';
 
 let initSystemBot_down = false;
 
 export function getInitSystemBots() {
 	const { USER_ID_BOT_FATHER } = ENV;
+	const getCommands = (botId: string) => {
+		switch (botId) {
+			case USER_ID_BOT_FATHER:
+				return BOT_FATHER_COMMANDS.map(cmd => {
+					return {
+						botId,
+						...cmd,
+					};
+				});
+		}
+		return [];
+	};
+
 	return [
 		{
 			id: USER_ID_BOT_FATHER,
-			commands: [
-				{
-					botId: USER_ID_BOT_FATHER,
-					command: 'start',
-					description: 'Start Chat',
-				},
-				{
-					botId: USER_ID_BOT_FATHER,
-					command: 'createBot',
-					description: 'Create a Bot',
-				},
-			],
+			commands: getCommands(USER_ID_BOT_FATHER),
 			first_name: 'Bot Father',
 			user_name: 'BotFather',
 			isPremium: true,

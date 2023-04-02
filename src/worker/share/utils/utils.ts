@@ -108,7 +108,8 @@ export function sha1(str: string): string {
 
 	for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
 		for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
-		for (i = 16; i < 80; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+		for (i = 16; i < 80; i++)
+			W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
 
 		A = H0;
 		B = H1;
@@ -135,7 +136,8 @@ export function sha1(str: string): string {
 		}
 
 		for (i = 40; i < 60; i++) {
-			temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + K[2]) & 0xffffffff;
+			temp =
+				(rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + K[2]) & 0xffffffff;
 			E = D;
 			D = C;
 			C = rotate_left(B, 30);
@@ -201,4 +203,22 @@ export function parseQueryFromUrl(urlStr: string): { url: URL; query: Record<str
 	);
 
 	return { url, query };
+}
+
+export function getCorsHeader(Access_Control_Allow_Origin: string = '*') {
+	return {
+		'content-type': 'application/json;charset=UTF-8',
+		'Access-Control-Allow-Origin': Access_Control_Allow_Origin,
+		'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+		'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
+		'Access-Control-Allow-Credentials': 'true',
+	};
+}
+export function ResponseJson(result: object, status = 200) {
+	return new Response(JSON.stringify(result), {
+		status,
+		headers: {
+			...getCorsHeader(),
+		},
+	});
 }
