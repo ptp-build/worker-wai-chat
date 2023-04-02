@@ -1,3 +1,5 @@
+export { default as AnswerCallbackButtonReq } from './AnswerCallbackButtonReq';
+export { default as AnswerCallbackButtonRes } from './AnswerCallbackButtonRes';
 export { default as MsgDeleteReq } from './MsgDeleteReq';
 export { default as MsgDeleteRes } from './MsgDeleteRes';
 export { default as MsgListReq } from './MsgListReq';

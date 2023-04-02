@@ -1,15 +1,15 @@
-import { genUserId } from '../AuthController';
+import { genUserId } from './AuthController';
 import { randomize } from 'worktop/utils';
 import {
 	uploadProfilePhotoReq,
 	updateProfile,
 	updateUsername,
 	apiLoadChatsReq,
-} from '../UserController';
-import { ENV, kv } from '../../helpers/env';
-import Account from '../../share/Account';
-import { ActionCommands, getActionCommandsName } from '../../../lib/ptp/protobuf/ActionCommands';
-import { Pdu } from '../../../lib/ptp/protobuf/BaseMsg';
+} from './UserController';
+import { ENV, kv } from '../helpers/env';
+import Account from '../share/Account';
+import { ActionCommands, getActionCommandsName } from '../../lib/ptp/protobuf/ActionCommands';
+import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import {
 	AuthLoginReq,
 	AuthLoginRes,
@@ -19,11 +19,11 @@ import {
 	AuthStep1Res,
 	AuthStep2Req,
 	AuthStep2Res,
-} from '../../../lib/ptp/protobuf/PTPAuth';
-import { ERR } from '../../../lib/ptp/protobuf/PTPCommon/types';
-import { OtherNotify } from '../../../lib/ptp/protobuf/PTPOther';
-import { msgHandler } from '../MsgController';
-import { User } from '../../share/model/User';
+} from '../../lib/ptp/protobuf/PTPAuth';
+import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
+import { OtherNotify } from '../../lib/ptp/protobuf/PTPOther';
+import { msgHandler } from './MsgController';
+import { User } from '../share/model/User';
 
 export let TASK_EXE_USER_ID = '';
 
@@ -125,6 +125,15 @@ async function handleSession(websocket: WebSocket) {
 					let uid = await accountServer.getUidFromCacheByAddress(res2.address);
 					if (!uid) {
 						uid = await genUserId();
+					} else {
+						while (true) {
+							const u = await User.getFromCache(uid);
+							if (u) {
+								uid = await genUserId();
+							} else {
+								break;
+							}
+						}
 					}
 					authLoginTs = +new Date();
 					pduRsp = new AuthPreLoginRes({
@@ -284,6 +293,7 @@ export async function _ApiMsg(pdu: Pdu, account: Account) {
 			case ActionCommands.CID_MsgDeleteReq:
 			case ActionCommands.CID_MsgUpdateReq:
 			case ActionCommands.CID_SendReq:
+			case ActionCommands.CID_AnswerCallbackButtonReq:
 				await msgHandler(pdu, account);
 				break;
 			case ActionCommands.CID_LoadChatsReq:

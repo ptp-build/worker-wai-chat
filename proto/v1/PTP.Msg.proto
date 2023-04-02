@@ -49,5 +49,22 @@ message MsgListRes{
   required Common.ERR err = 100;
 }
 
+message AnswerCallbackButtonReq{
+  required string chatId = 1;
+  optional string accessHash = 4;
+  required uint32 messageId = 2;
+  optional string data = 3;
+  optional bool isGame = 5;
+}
+
+message AnswerCallbackButtonRes{
+  optional string message = 1;
+  optional string url = 2;
+  optional string alert = 3;
+  required Common.ERR err = 100;
+}
+
+
+
 
 

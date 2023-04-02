@@ -2,20 +2,23 @@ import { getCorsHeader, ResponseJson } from './worker/helpers/network';
 import WsController from './worker/controller/WsController';
 import ProtoController from './worker/controller/ProtoController';
 import TestController from './worker/controller/TestController';
-import TaskController from './worker/controller/TaskController';
 
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
 import { ENV } from './worker/helpers/env';
 import { SWAGGER_DOC } from './setting';
 import * as ApiController from './worker/controller/ApiController';
 import * as BotController from './worker/controller/BotController';
+import * as TaskController from './worker/controller/TaskController';
 
 const router = OpenAPIRouter(SWAGGER_DOC);
 
 router.all('*', (request: Request) => {
-	const { TEST_TOKEN, IS_PROD } = ENV;
+	const { WAI_WORKER_API_TOKEN, IS_PROD } = ENV;
 	if (IS_PROD && request.url.includes('/api/')) {
-		if (!TEST_TOKEN || request.headers.get('Authorization') !== `Bearer ${TEST_TOKEN}`) {
+		if (
+			!WAI_WORKER_API_TOKEN ||
+			request.headers.get('Authorization') !== `Bearer ${WAI_WORKER_API_TOKEN}`
+		) {
 			return ResponseJson({
 				err_msg: 'invalid token',
 			});
@@ -24,6 +27,7 @@ router.all('*', (request: Request) => {
 });
 
 router.post('/api/bot', BotController.BotController);
+router.post('/api/task', TaskController.TaskApi);
 
 router.get('/api/bot/public', ApiController.PublicBots);
 
@@ -59,8 +63,5 @@ export async function handleEvent(event: FetchEvent) {
 		return TestController(event.request);
 	}
 
-	if (url.pathname === '/task') {
-		return TaskController(event.request);
-	}
 	return await router.handle(event.request);
 }

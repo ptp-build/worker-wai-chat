@@ -6,10 +6,10 @@ import Logger from '../share/utils/Logger';
 
 export const ENV: {
 	IS_PROD: boolean;
-	BOT_API: string;
+	BOT_WORKER_API: string;
 	TASK_EXE_USER_ID: string;
 	KV_NAMESPACE_KEY: string;
-	TEST_TOKEN: string;
+	WAI_WORKER_API_TOKEN: string;
 	USER_ID_START: string;
 	USER_ID_BOT_FATHER: string;
 	USER_ID_SUPER_ADMIN: string;
@@ -30,10 +30,10 @@ export const ENV: {
 	MAX_HISTORY_LENGTH: number;
 } = {
 	IS_PROD: true,
-	BOT_API: 'http://localhost:1236/api',
+	BOT_WORKER_API: '',
 	KV_NAMESPACE_KEY: 'DATABASE_PROD',
 	TASK_EXE_USER_ID: '',
-	TEST_TOKEN: '',
+	WAI_WORKER_API_TOKEN: '',
 	USER_ID_START: '623415',
 	USER_ID_BOT_FATHER: '10000',
 	USER_ID_SUPER_ADMIN: '',

@@ -667,7 +667,7 @@ var $conv_message = $createConverter([
                     '$': {"1":["text","string",""],"2":["type","string",""]}
                 },
                 PbBotInfo: {
-                    '$': {"1":["botId","string",""],"2":["description","string",""],"3":["isChatGpt","bool",false],"4":["menuButton","default.PTP.Common.PbMenuButton",null],"5":["commands","<default.PTP.Common.PbCommands",null]}
+                    '$': {"1":["botId","string",""],"2":["description","string",""],"3":["isChatGpt","bool",false],"4":["menuButton","default.PTP.Common.PbMenuButton",null],"5":["commands","<default.PTP.Common.PbCommands",null],"6":["photo","default.PTP.Common.PbPhoto",null]}
                 },
                 PbChat: {
                     '$': {"1":["type","string",""],"2":["id","string",""],"3":["title","string",""],"4":["usernames","<default.PTP.Common.PbUsernames",null],"5":["isMuted","bool",false],"6":["isMin","bool",false],"7":["hasPrivateLink","bool",false],"8":["isSignaturesShown","bool",false],"9":["accessHash","string",""],"10":["isVerified","bool",false],"11":["isJoinToSend","bool",false],"12":["isJoinRequest","bool",false],"13":["isForum","bool",false],"14":["isListed","bool",false],"15":["settings","default.PTP.Common.PbSettings",null],"16":["lastMessage","default.PTP.Common.PbMsg",null]}
@@ -688,7 +688,7 @@ var $conv_message = $createConverter([
                     '$': {"1":["bio","string",""],"2":["commonChatsCount","uint32",0],"3":["isBlocked","bool",false],"4":["noVoiceMessages","bool",false],"5":["botInfo","default.PTP.Common.PbBotInfo",null],"6":["pinnedMessageId","uint32",0]}
                 },
                 PbMenuButton: {
-                    '$': {"1":["type","string",""]}
+                    '$': {"1":["type","string",""],"2":["text","string",""],"3":["url","string",""]}
                 },
                 PbMessageEntity: {
                     '$': {"1":["type","string",""],"2":["offset","uint32",0],"3":["length","uint32",0],"4":["documentId","string",""],"5":["userId","string",""],"6":["url","string",""],"7":["language","string",""],"8":["cipher","string",""],"9":["hint","string",""]}
@@ -745,6 +745,12 @@ var $conv_message = $createConverter([
                 }
             },
             Msg: {
+                AnswerCallbackButtonReq: {
+                    '$': {"1":["chatId","string",""],"2":["messageId","uint32",0],"3":["data","string",""],"4":["accessHash","string",""],"5":["isGame","bool",false]}
+                },
+                AnswerCallbackButtonRes: {
+                    '$': {"1":["message","string",""],"2":["url","string",""],"3":["alert","string",""],"100":["err","uint32",0]}
+                },
                 MsgDeleteReq: {
                     '$': {"1":["user_id","string",""],"2":["chat_id","string",""],"3":["msg_ids","[uint32",null],"4":["revoke","bool",false]}
                 },

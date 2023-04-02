@@ -1,6 +1,19 @@
 // DO NOT EDIT
 import type * as PTPCommon from '../PTPCommon/types';
 
+export interface AnswerCallbackButtonReq_Type {
+  chatId: string;
+  messageId: number;
+  data?: string;
+  accessHash?: string;
+  isGame?: boolean;
+}
+export interface AnswerCallbackButtonRes_Type {
+  message?: string;
+  url?: string;
+  alert?: string;
+  err: PTPCommon.ERR;
+}
 export interface MsgDeleteReq_Type {
   user_id: string;
   chat_id: string;

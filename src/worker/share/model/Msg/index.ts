@@ -3,6 +3,7 @@ import {
 	ERR,
 	PbChatGpBotConfig_Type,
 	PbMsg_Type,
+	PbPhoto_Type,
 } from '../../../../lib/ptp/protobuf/PTPCommon/types';
 import { ENV, kv } from '../../../helpers/env';
 import { USER_CONFIG } from '../../../helpers/context';
@@ -146,6 +147,11 @@ export class Msg extends PbMsg {
 			}
 			this.msg!.id = this.user_id === this.senderId ? this.senderMsgId! : this.receiverMsgId!;
 			this.msg.isOutgoing = this.user_id === this.senderId;
+			this.msg.senderId = this.chatIsNotGroupOrChannel
+				? this.msg.isOutgoing
+					? this.user_id
+					: this.chatId
+				: this.user_id;
 
 			await this.reply(
 				msgType,
@@ -163,7 +169,7 @@ export class Msg extends PbMsg {
 	}
 
 	async sendPhoto(
-		photo: { id: string },
+		photo: PbPhoto_Type,
 		msgType: MsgType = 'updateMessageSendSucceeded',
 		other: Record<string, any> = {},
 		msgId?: number
@@ -171,37 +177,12 @@ export class Msg extends PbMsg {
 		if (!this.msg) {
 			this.initMsg();
 		}
-		if (this.msg) {
-			this.msg!.content = {
-				photo: {
-					id: photo.id,
-					thumbnail: {
-						dataUri:
-							'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACgcHiMeGSgjISMtKygwPGRBPDc3PHtYXUlkkYCZlo+AjIqgtObDoKrarYqMyP/L2u71////m8H////6/+b9//j/2wBDASstLTw1PHZBQXb4pYyl+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj/wAARCAAoACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCpHljtXknpSyFRjbnOOc+tMjYoN4PParRjW5G7BE7D7vQE03qKK5V6kA96OKuNYA/ut7ebjPT5ah2LajzMEzIPu9QDU2udDqqOkUVn3IDkYYdRRTd5fcWOSaKNibtpO4rDoOwFXrWS2kPO6KQjBIPHv+dZe8lcE8VbUrawneCZXH3f7o/xP6VRnJpvQvKbwzfdXGd3OMYqC5mtFJ275ZAMZPT8fpUYu0EYbC4x/q8DGaZIi3MW+MYlA6D+If4/zpA9UVz/AKrC9e9FMQ7csfpj1opMqykld2I80pZnYliSTRRVGYq4zzTy5XbsbBXnIoopdSk9GR5ooopkn//Z',
-						width: 320,
-						height: 320,
-					},
-					sizes: [
-						{
-							width: 320,
-							height: 320,
-							type: 'm',
-						},
-						{
-							width: 640,
-							height: 640,
-							type: 'x',
-						},
-					],
-					isSpoiler: false,
-				},
-			};
-			this.msg = {
-				...this.msg,
-				...other,
-			};
-			await this.send(msgType);
-		}
+		this.msg!.content = {
+			photo,
+		};
+		// @ts-ignore
+		this.msg = { ...this.msg, ...other };
+		await this.send(msgType);
 	}
 
 	async sendVoice(
@@ -238,8 +219,7 @@ export class Msg extends PbMsg {
 	async sendText(
 		text: string,
 		msgType: MsgType = 'updateMessageSendSucceeded',
-		other: Record<string, any> = {},
-		msgId?: number
+		other: Record<string, any> = {}
 	) {
 		const entities = other.entities || undefined;
 		if (!this.msg) {
@@ -412,7 +392,7 @@ export class Msg extends PbMsg {
 		if (Account.UserIdAccountIdMap[user_id]) {
 			for (let i = 0; i < Account.UserIdAccountIdMap[user_id!].length; i++) {
 				const account = Account.UserIdAccountIdMap[user_id!][i];
-				console.log('[Broadcast]', account.getAccountId(), account.getUid);
+				Logger.log('[Broadcast]', account.getAccountId(), account.getUid());
 				if (user_id === account.getUid()) {
 					pdu.updateSeqNo(seqNum);
 				} else {

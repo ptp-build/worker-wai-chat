@@ -17,7 +17,7 @@ export default class CloudFlareKv {
 		if (!force && CloudFlareKv.cache[key] !== undefined) {
 			return CloudFlareKv.cache[key];
 		} else {
-			Logger.debug('from cache', key);
+			// Logger.debug('from cache', key);
 			CloudFlareKv.cache[key] = await this.db.get(key);
 			return CloudFlareKv.cache[key];
 		}

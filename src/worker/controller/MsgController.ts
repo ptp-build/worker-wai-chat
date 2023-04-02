@@ -1,6 +1,7 @@
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import Account from '../share/Account';
 import {
+	AnswerCallbackButtonReq,
 	MsgDeleteReq,
 	MsgDeleteRes,
 	MsgListReq,
@@ -13,9 +14,10 @@ import { Msg } from '../share/model/Msg';
 import { User } from '../share/model/User';
 import { ActionCommands } from '../../lib/ptp/protobuf/ActionCommands';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
-import BotMsg from '../share/model/Msg/BotMsg';
+import BotMsgDispatcher from '../share/model/Msg/BotMsgDispatcher';
 import UserMsg from '../share/model/UserMsg';
 import Logger from '../share/utils/Logger';
+import { AnswerCallbackButtonReq_Type } from '../../lib/ptp/protobuf/PTPMsg/types';
 
 export async function msgHandler(pdu: Pdu, account: Account) {
 	switch (pdu.getCommandId()) {
@@ -94,31 +96,54 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 		default:
 			break;
 	}
-
-	const sendReq = SendReq.parseMsg(pdu);
-	const seq_num = pdu.getSeqNum();
-	const { payload } = sendReq;
-	const { msg } = JSON.parse(payload);
-	const { chatId, id } = msg;
 	const user_id = account.getUid()!;
-	const msgSendByUser = new Msg(msg);
-	const chatIsNotGroupOrChannel = Msg.getChatIsNotGroupOrChannel(chatId);
 	let botInfo;
-	if (chatIsNotGroupOrChannel) {
-		const chatUser = await User.getFromCache(chatId);
+	let chatId;
+	let msgSendByUser: Msg | undefined;
+	let answerCallbackButtonReq: AnswerCallbackButtonReq_Type | undefined;
+	if (pdu.getCommandId() === ActionCommands.CID_AnswerCallbackButtonReq) {
+		answerCallbackButtonReq = AnswerCallbackButtonReq.parseMsg(pdu);
+		chatId = answerCallbackButtonReq.chatId;
+		const chatUser = await User.getFromCache(chatId, true);
 		botInfo = chatUser?.isBot() ? chatUser?.getUserInfo()!.fullInfo?.botInfo! : null;
 	}
-	msgSendByUser.init(user_id, chatId, !!botInfo, user_id);
-	await msgSendByUser.send('updateMessageSendSucceeded', { localMsgId: id }, seq_num);
-	await msgSendByUser.save();
-	console.log({
-		senderLastMsgId: await msgSendByUser.senderUserMsg?.getLastMsgId(),
-		senderLastChatMsgId: await msgSendByUser.senderUserMsg?.getLastChatMsgId(),
-		pairLastMsgId: await msgSendByUser.pairUserMsg?.getLastMsgId(),
-		pairLastChatMsgId: await msgSendByUser.pairUserMsg?.getLastChatMsgId(),
-		lastChatMsgId: await msgSendByUser.chatMsg?.getLastMsgId(),
-	});
-	if (botInfo) {
-		await new BotMsg(user_id, chatId, msgSendByUser, botInfo).process();
+	if (pdu.getCommandId() === ActionCommands.CID_SendReq) {
+		const sendReq = SendReq.parseMsg(pdu);
+		const seq_num = pdu.getSeqNum();
+		const { payload } = sendReq;
+		const { msg } = JSON.parse(payload);
+		const { id } = msg;
+		chatId = msg.chatId;
+		msgSendByUser = new Msg(msg);
+		const chatIsNotGroupOrChannel = Msg.getChatIsNotGroupOrChannel(chatId);
+		if (chatIsNotGroupOrChannel) {
+			const chatUser = await User.getFromCache(chatId, true);
+			botInfo = chatUser?.isBot() ? chatUser?.getUserInfo()!.fullInfo?.botInfo! : null;
+		}
+		msgSendByUser.init(user_id, chatId, !!botInfo, user_id);
+		await msgSendByUser.send('updateMessageSendSucceeded', { localMsgId: id }, seq_num);
+		await msgSendByUser.save();
+
+		Logger.log({
+			senderLastMsgId: await msgSendByUser.senderUserMsg?.getLastMsgId(),
+			senderLastChatMsgId: await msgSendByUser.senderUserMsg?.getLastChatMsgId(),
+			pairLastMsgId: await msgSendByUser.pairUserMsg?.getLastMsgId(),
+			pairLastChatMsgId: await msgSendByUser.pairUserMsg?.getLastChatMsgId(),
+			lastChatMsgId: await msgSendByUser.chatMsg?.getLastMsgId(),
+			botId: botInfo?.botId,
+			user_id,
+			chatId,
+			msgText: msgSendByUser.getMsgText(),
+		});
+	}
+
+	if (botInfo && chatId && user_id) {
+		await new BotMsgDispatcher(
+			user_id,
+			chatId,
+			botInfo,
+			answerCallbackButtonReq,
+			msgSendByUser
+		).process();
 	}
 }

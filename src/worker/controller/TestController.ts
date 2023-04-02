@@ -10,10 +10,13 @@ import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import { PbMsg } from '../../lib/ptp/protobuf/PTPCommon';
 
 export default async function (request: Request) {
-	const TEST_TOKEN = ENV.TEST_TOKEN;
+	const WAI_WORKER_API_TOKEN = ENV.WAI_WORKER_API_TOKEN;
 	const IS_PROD = ENV.IS_PROD;
 	if (IS_PROD) {
-		if (!TEST_TOKEN || request.headers.get('Authorization') !== `Bearer ${TEST_TOKEN}`) {
+		if (
+			!WAI_WORKER_API_TOKEN ||
+			request.headers.get('Authorization') !== `Bearer ${WAI_WORKER_API_TOKEN}`
+		) {
 			return ResponseJson({
 				err_msg: 'invalid token',
 			});

@@ -16,7 +16,7 @@ id = ""
 
 [vars]
 IS_PROD = true
-TEST_TOKEN = ""
+WAI_WORKER_API_TOKEN = ""
 USER_ID_START = "623415"
 USER_ID_SUPER_ADMIN = ""
 
@@ -33,4 +33,4 @@ GOOGLE_CLIENT_SECRET = ""
 OPENAI_API_KEY=""
 FRONTEND_URL = "https://xxxx.dev"
 Access_Control_Allow_Origin="https://xxxx.dev"
-BOT_API='http://localhost:1236/api',
+BOT_WORKER_API='http://localhost:1236/api'

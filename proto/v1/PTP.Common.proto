@@ -39,6 +39,8 @@ message PbUsernames {
 
 message PbMenuButton {
   required string type = 1;
+  optional string text = 2;
+  optional string url = 3;
 }
 
 message PbCommands {
@@ -54,7 +56,7 @@ message PbBotInfo {
   optional bool isChatGpt = 3;
   optional PbMenuButton menuButton = 4;
   repeated PbCommands commands = 5;
-  //  photo?: ApiPhoto;
+  optional PbPhoto photo = 6;
 //  gif?: ApiVideo;
 }
 
