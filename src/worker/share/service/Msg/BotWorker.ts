@@ -12,7 +12,7 @@ import { Chat } from '../Chat';
 import { Msg } from './index';
 import Logger from '../../utils/Logger';
 import { ENV, kv } from '../../../env';
-import { BOT_FATHER_COMMANDS, SUPER_BOT_COMMANDS } from '../../../../setting';
+import { BOT_FATHER_COMMANDS, SUPER_BOT_COMMANDS } from '../../../setting';
 import { AnswerCallbackButtonReq_Type } from '../../../../lib/ptp/protobuf/PTPMsg/types';
 import { sendMessageToChatGPT } from '../../utils/openai';
 

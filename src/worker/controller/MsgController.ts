@@ -10,12 +10,12 @@ import {
 	MsgUpdateRes,
 	SendReq,
 } from '../../lib/ptp/protobuf/PTPMsg';
-import { Msg } from '../share/model/Msg';
-import { User } from '../share/model/User';
+import { Msg } from '../share/service/Msg';
+import { User } from '../share/service/User';
 import { ActionCommands } from '../../lib/ptp/protobuf/ActionCommands';
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
-import BotMsgDispatcher from '../share/model/Msg/BotMsgDispatcher';
-import UserMsg from '../share/model/UserMsg';
+import BotMsgDispatcher from '../share/service/Msg/BotMsgDispatcher';
+import UserMsg from '../share/service/UserMsg';
 import Logger from '../share/utils/Logger';
 import { AnswerCallbackButtonReq_Type } from '../../lib/ptp/protobuf/PTPMsg/types';
 

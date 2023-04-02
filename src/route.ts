@@ -5,7 +5,7 @@ import * as TaskController from './worker/controller/TaskController';
 
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi';
 import { ENV } from './worker/env';
-import { SWAGGER_DOC } from './setting';
+import { SWAGGER_DOC } from './worker/setting';
 import * as ApiController from './worker/controller/ApiController';
 import * as BotController from './worker/controller/BotController';
 import { getCorsHeader, ResponseJson } from './worker/share/utils/utils';

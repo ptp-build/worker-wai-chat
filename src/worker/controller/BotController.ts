@@ -1,5 +1,5 @@
 import { OpenAPIRoute } from '@cloudflare/itty-router-openapi';
-import BotWorker from '../share/model/Msg/BotWorker';
+import BotWorker from '../share/service/Msg/BotWorker';
 
 export class BotController extends OpenAPIRoute {
 	static schema = {

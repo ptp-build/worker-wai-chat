@@ -1,7 +1,7 @@
 import * as utils from 'worktop/utils';
 import { ENV } from '../env';
 import Account from '../share/Account';
-import { Msg } from '../share/model/Msg';
+import { Msg } from '../share/service/Msg';
 import { TASK_EXE_USER_ID } from './WsController';
 import { OpenAPIRoute } from '@cloudflare/itty-router-openapi';
 

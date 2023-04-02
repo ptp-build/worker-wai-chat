@@ -1,11 +1,11 @@
-import { User } from '../share/model/User';
+import { User } from '../share/service/User';
 import { ENV, kv } from '../env';
 import { OpenAPIRoute, Path, Query, Str } from '@cloudflare/itty-router-openapi';
-import { Chat } from '../share/model/Chat';
+import { Chat } from '../share/service/Chat';
 import Account from '../share/Account';
-import UserMsg from '../share/model/UserMsg';
-import { Msg } from '../share/model/Msg';
-import ChatMsg from '../share/model/ChatMsg';
+import UserMsg from '../share/service/UserMsg';
+import { Msg } from '../share/service/Msg';
+import ChatMsg from '../share/service/ChatMsg';
 import { getInitSystemBots, initSystemBot } from './UserController';
 
 export class UserGet extends OpenAPIRoute {

@@ -1,5 +1,5 @@
 import { ENV } from '../env';
-import { User } from '../share/model/User';
+import { User } from '../share/service/User';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import Account from '../share/Account';
 import UploadProfilePhotoReq from '../../lib/ptp/protobuf/PTPAuth/UploadProfilePhotoReq';
@@ -7,7 +7,7 @@ import UploadProfilePhotoRes from '../../lib/ptp/protobuf/PTPAuth/UploadProfileP
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { UpdateProfileReq, UpdateUsernameReq } from '../../lib/ptp/protobuf/PTPAuth';
 import { LoadChatsReq, LoadChatsRes } from '../../lib/ptp/protobuf/PTPChats';
-import { BOT_FATHER_COMMANDS } from '../../setting';
+import { BOT_FATHER_COMMANDS } from '../setting';
 
 let initSystemBot_down = false;
 

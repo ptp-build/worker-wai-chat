@@ -1,5 +1,5 @@
 import { PbChat_Type, PbPhoto_Type, PbUser_Type } from './lib/ptp/protobuf/PTPCommon/types';
-import { MsgType } from './worker/share/model/Msg';
+import { MsgType } from './worker/share/service/Msg';
 
 export enum AiChatRole {
 	USER,

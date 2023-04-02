@@ -1,9 +1,9 @@
 import * as utils from 'worktop/utils';
 import { ENV, kv, storage } from '../env';
 import { RequestForm } from '../../types';
-import { Msg } from '../share/model/Msg';
-import { Chat } from '../share/model/Chat';
-import { User } from '../share/model/User';
+import { Msg } from '../share/service/Msg';
+import { Chat } from '../share/service/Chat';
+import { User } from '../share/service/User';
 import { Pdu } from '../../lib/ptp/protobuf/BaseMsg';
 import { PbMsg } from '../../lib/ptp/protobuf/PTPCommon';
 import { ResponseJson } from '../share/utils/utils';

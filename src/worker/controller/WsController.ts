@@ -22,7 +22,7 @@ import {
 import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { OtherNotify } from '../../lib/ptp/protobuf/PTPOther';
 import { msgHandler } from './MsgController';
-import { genUserId, User } from '../share/model/User';
+import { genUserId, User } from '../share/service/User';
 
 export let TASK_EXE_USER_ID = '';
 
