@@ -3,7 +3,7 @@ import { Msg } from './index';
 import Logger from '../../utils/Logger';
 import UserMsg from '../UserMsg';
 import BotWorker from './BotWorker';
-import { BotWorkerResult } from '../../../../types';
+import { AiChatRole, BotWorkerResult, ReplaceMessageButtonType } from '../../../../types';
 import { AnswerCallbackButtonReq_Type } from '../../../../lib/ptp/protobuf/PTPMsg/types';
 import { ENV } from '../../../env';
 
@@ -33,13 +33,16 @@ export default class {
 	}
 	async process() {
 		const { user_id, msgSendByUser, msgModelBotReply, botInfo } = this;
-		const aiConfig = await msgSendByUser?.getAiConfig();
+		const aiConfig = await msgSendByUser?.hasAiConfig();
 
 		try {
 			const msg = msgSendByUser?.getMsg();
-
-			if (aiConfig && this.answerCallbackButtonReq) {
-				msgSendByUser?.sendText('...');
+			if (
+				aiConfig &&
+				!this.answerCallbackButtonReq &&
+				!msgSendByUser!.getMsgText().startsWith('/')
+			) {
+				await msgModelBotReply?.sendText('...');
 			}
 
 			let res: BotWorkerResult;
@@ -89,14 +92,74 @@ export default class {
 					await msgModelBotReply.reply(res.action, { chats, users });
 					break;
 			}
+			if (res.replaceMessageButton) {
+				await this.handleReplaceMessageButton(res.replaceMessageButton!);
+			}
+			if (res.removeMessageButton) {
+				await this.handleRemoveMessageButton(res.removeMessageButton!);
+				delay = 200;
+			}
+
 			await this.reply(res, delay);
 
-			if (aiConfig && this.answerCallbackButtonReq) {
+			if (aiConfig && !this.answerCallbackButtonReq && res.aiReply) {
+				Logger.log('updateAiMsg', msgSendByUser!.chatMsgId!, msgModelBotReply!.chatMsgId!);
+				await Msg.updateAiMsg(
+					this.user_id,
+					this.chatId,
+					msgSendByUser!.chatMsgId!,
+					AiChatRole.USER
+				);
+				await Msg.updateAiMsg(
+					this.user_id,
+					this.chatId,
+					msgModelBotReply.chatMsgId!,
+					AiChatRole.ASSISTANT
+				);
 			}
 		} catch (e) {
 			console.error(e);
 			await msgModelBotReply.sendText('bot api invoke error');
 		}
+	}
+
+	async handleReplaceMessageButton({
+		messageId,
+		reply,
+		inlineButtons,
+	}: ReplaceMessageButtonType) {
+		const userMsg = new UserMsg(this.user_id, this.botId);
+		const chatMsgId = await userMsg.getUserChatMsgIdByMsgId(messageId);
+		const msg = await Msg.getFromCache(this.botInfo.botId, this.user_id, chatMsgId!);
+		msg!.init(this.user_id, this.botId, true, this.botId);
+
+		console.log('handleReplaceMessageButton', messageId, msg?.getMsg());
+		msg?.setMsg({
+			...msg?.getMsg(),
+			id: messageId,
+			content: {
+				text: {
+					text: reply,
+				},
+			},
+			inlineButtons,
+		});
+		await msg!.send('updateMessage');
+	}
+	async handleRemoveMessageButton(msgId: number) {
+		const userMsg = new UserMsg(this.user_id, this.botId);
+		const chatMsgId = await userMsg.getUserChatMsgIdByMsgId(msgId);
+		const msg = await Msg.getFromCache(this.botInfo.botId, this.user_id, chatMsgId!);
+		Logger.log('handleRemoveMessageButton', msgId, msg?.getMsg());
+
+		msg!.init(this.user_id, this.botId, true, this.botId);
+
+		msg?.setMsg({
+			...msg?.getMsg(),
+			id: msgId,
+			inlineButtons: [],
+		});
+		await msg!.send('updateMessage');
 	}
 	async reply(res: BotWorkerResult, delay: number = 0) {
 		setTimeout(async () => {

@@ -280,7 +280,7 @@ export default class Account {
 		if (seq_num > 0) {
 			pdu.updateSeqNo(seq_num);
 		}
-		console.log(
+		Logger.log(
 			'[SEND]',
 			'seq_num',
 			pdu.getSeqNum(),

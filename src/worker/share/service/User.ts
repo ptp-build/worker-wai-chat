@@ -1,12 +1,7 @@
 import { ENV, kv } from '../../env';
 import { Chat } from './Chat';
 import { Msg } from './Msg';
-import {
-	PbCommands,
-	PbMenuButton,
-	PbUser,
-	PbUserSetting,
-} from '../../../lib/ptp/protobuf/PTPCommon';
+import { PbUser, PbUserSetting } from '../../../lib/ptp/protobuf/PTPCommon';
 import { Pdu } from '../../../lib/ptp/protobuf/BaseMsg';
 import {
 	PbBotInfo_Type,
@@ -24,6 +19,17 @@ import Account from '../Account';
 import { Bot } from './Bot';
 import { LoadChatsReq_Type } from '../../../lib/ptp/protobuf/PTPChats/types';
 import { getInitSystemBots, initSystemBot } from '../../controller/UserController';
+
+export async function genUserId() {
+	let value = await kv.get('USER_INCR', true);
+	if (!value) {
+		value = parseInt(ENV.USER_ID_START);
+	} else {
+		value = parseInt(value) + 1;
+	}
+	await kv.put('USER_INCR', value.toString());
+	return value.toString();
+}
 
 export class User extends PbUser {
 	public declare msg?: PbUser_Type;
@@ -477,15 +483,4 @@ export class User extends PbUser {
 		const str = await kv.get(`${this.getUserInfo().id}_${botId}`);
 		return str ? parseInt(str) : null;
 	}
-}
-
-export async function genUserId() {
-	let value = await kv.get('USER_INCR', true);
-	if (!value) {
-		value = parseInt(ENV.USER_ID_START);
-	} else {
-		value = parseInt(value) + 1;
-	}
-	await kv.put('USER_INCR', value.toString());
-	return value.toString();
 }

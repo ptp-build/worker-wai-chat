@@ -123,6 +123,7 @@ export class Msg extends PbMsg {
 		payload?: Record<string, any>,
 		seqNum: number = 0
 	) {
+		Logger.debug('[reply]', msgType, payload);
 		const pdu = new SendRes({
 			err: ERR.NO_ERROR,
 			action: msgType,
@@ -152,6 +153,7 @@ export class Msg extends PbMsg {
 					: this.chatId
 				: this.user_id;
 
+			this.hasSent = true;
 			await this.reply(
 				msgType,
 				{
@@ -160,7 +162,6 @@ export class Msg extends PbMsg {
 				},
 				seqNum
 			);
-			this.hasSent = true;
 		}
 	}
 	setMsgDate() {
@@ -170,8 +171,7 @@ export class Msg extends PbMsg {
 	async sendPhoto(
 		photo: PbPhoto_Type,
 		msgType: MsgType = 'updateMessageSendSucceeded',
-		other: Record<string, any> = {},
-		msgId?: number
+		other: Record<string, any> = {}
 	) {
 		if (!this.msg) {
 			this.initMsg();
@@ -389,9 +389,9 @@ export class Msg extends PbMsg {
 	async broadcast(pdu: Pdu, seqNum: number = 0) {
 		const user_id = this.user_id!;
 		if (Account.UserIdAccountIdMap[user_id]) {
+			Logger.log('[Broadcast]', Account.UserIdAccountIdMap[user_id].length);
 			for (let i = 0; i < Account.UserIdAccountIdMap[user_id!].length; i++) {
 				const account = Account.UserIdAccountIdMap[user_id!][i];
-				Logger.log('[Broadcast]', account.getAccountId(), account.getUid());
 				if (user_id === account.getUid()) {
 					pdu.updateSeqNo(seqNum);
 				} else {
@@ -490,6 +490,10 @@ export class Msg extends PbMsg {
 		}
 	}
 
+	async hasAiConfig() {
+		const config = await this.getAiConfig();
+		return config && config.init_system_content !== undefined;
+	}
 	getChatGptInitMsg(config?: PbChatGpBotConfig_Type): AiChatHistory[] {
 		let content = ENV.SYSTEM_INIT_MESSAGE;
 		if (config && config.init_system_content) {
