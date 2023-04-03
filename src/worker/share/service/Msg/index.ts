@@ -444,17 +444,34 @@ export class Msg extends PbMsg {
 		await kv.put(`M_A_${user_id}_${chatId}_${chatMsgId}_${role.toString()}`, '1');
 	}
 
-	async getAiMsgIds() {
+	async getAiMsgIds(maxLen: number = 4) {
 		const res = await kv.list({ prefix: `M_A_${this.user_id}_${this.chatId}_` });
-		const msgList = res.map((key: any) => {
+		let msgList = res.map((key: any) => {
 			const t = key.name.split('_');
 			return {
+				user_id: parseInt(t[2]),
+				chatId: parseInt(t[3]),
 				chatMsgId: parseInt(t[4]),
 				role: parseInt(t[5]),
 			};
 		});
 		msgList.sort((a, b) => a.chatMsgId - b.chatMsgId);
-		return msgList;
+		if (msgList.length > maxLen) {
+			msgList = msgList.slice(msgList.length - maxLen);
+			for (let i = 0; i < msgList.length; i++) {
+				if (i < msgList.length - maxLen) {
+					await kv.delete(
+						`M_A_${msgList[i].user_id}_${msgList[i].chatId}_${msgList[i].chatMsgId}_${msgList[i].role}`
+					);
+				}
+			}
+		}
+		return msgList.map(({ chatMsgId, role }) => {
+			return {
+				chatMsgId,
+				role,
+			};
+		});
 	}
 
 	async updateAiConfig(config: PbChatGpBotConfig_Type) {
@@ -481,9 +498,9 @@ export class Msg extends PbMsg {
 		return [{ role: 'system', content }];
 	}
 
-	async getAiMsgHistory(): Promise<AiChatHistory[]> {
+	async getAiMsgHistory(maxLen: number = 4): Promise<AiChatHistory[]> {
 		const history: AiChatHistory[] = [];
-		const rows = await this.getAiMsgIds();
+		const rows = await this.getAiMsgIds(maxLen);
 		for (let i = 0; i < rows.length; i++) {
 			const { chatMsgId, role } = rows[i];
 			const msg = await Msg.getFromCache(this.user_id!, this.chatId!, chatMsgId);
@@ -492,15 +509,15 @@ export class Msg extends PbMsg {
 				content: msg?.getMsgText()!,
 			});
 		}
-		return this.handleHistory(history);
+		return this.handleHistory(history, maxLen);
 	}
 
-	async handleHistory(history: AiChatHistory[]) {
+	async handleHistory(history: AiChatHistory[], maxLen: number = 4) {
 		const MAX_TOKEN_LENGTH = 2000;
-		if (ENV.AUTO_TRIM_HISTORY && ENV.MAX_HISTORY_LENGTH > 0) {
+		if (ENV.AUTO_TRIM_HISTORY && maxLen > 0) {
 			// 历史记录超出长度需要裁剪
-			if (history.length > ENV.MAX_HISTORY_LENGTH) {
-				history.splice(history.length - ENV.MAX_HISTORY_LENGTH + 2);
+			if (history.length > maxLen) {
+				history.splice(history.length - maxLen + 2);
 			}
 			// 处理token长度问题
 			let tokenLength = 0;

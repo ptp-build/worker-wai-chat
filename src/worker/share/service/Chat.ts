@@ -13,6 +13,9 @@ export class Chat extends PbChat {
 
 	getChatInfo() {
 		return {
+			id: '0',
+			title: '',
+			type: Chat.chatTypePrivate,
 			isMuted: false,
 			isMin: false,
 			hasPrivateLink: false,

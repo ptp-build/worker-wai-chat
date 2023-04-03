@@ -676,7 +676,7 @@ var $conv_message = $createConverter([
                     '$': {"1":["id","uint32",0],"2":["title","string",""],"3":["channels","bool",false],"4":["pinnedChatIds","<string",null],"5":["includedChatIds","<string",null],"6":["excludedChatIds","<string",null]}
                 },
                 PbChatGpBotConfig: {
-                    '$': {"1":["init_system_content","string",""],"2":["api_key","string",""]}
+                    '$': {"1":["init_system_content","string",""],"2":["api_key","string",""],"3":["max_history_length","uint32",0]}
                 },
                 PbCommands: {
                     '$': {"1":["botId","string",""],"2":["command","string",""],"3":["description","string",""]}

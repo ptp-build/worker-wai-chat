@@ -40,9 +40,9 @@ export const ENV: {
 	// OpenAI API Key
 	OPENAI_API_KEY: '',
 	// 为了避免4096字符限制，将消息删减
-	AUTO_TRIM_HISTORY: false,
+	AUTO_TRIM_HISTORY: true,
 	// 最大历史记录长度
-	MAX_HISTORY_LENGTH: 20,
+	MAX_HISTORY_LENGTH: 10,
 };
 
 export let kv: CloudFlareKv;

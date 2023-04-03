@@ -69,6 +69,7 @@ export interface PbChatFolder_Type {
 export interface PbChatGpBotConfig_Type {
   init_system_content?: string;
   api_key?: string;
+  max_history_length?: number;
 }
 
 export interface PbCommands_Type {
