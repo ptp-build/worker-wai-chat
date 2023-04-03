@@ -99,6 +99,7 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 	const user_id = account.getUid()!;
 	let botInfo;
 	let chatId;
+	let senderLastMsgId;
 	let msgSendByUser: Msg | undefined;
 	let answerCallbackButtonReq: AnswerCallbackButtonReq_Type | undefined;
 	if (pdu.getCommandId() === ActionCommands.CID_AnswerCallbackButtonReq) {
@@ -123,7 +124,7 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 		msgSendByUser.init(user_id, chatId, !!botInfo, user_id);
 		await msgSendByUser.send('updateMessageSendSucceeded', { localMsgId: id }, seq_num);
 		await msgSendByUser.save();
-
+		senderLastMsgId = await msgSendByUser.senderUserMsg?.getLastMsgId();
 		Logger.log({
 			senderLastMsgId: await msgSendByUser.senderUserMsg?.getLastMsgId(),
 			senderLastChatMsgId: await msgSendByUser.senderUserMsg?.getLastChatMsgId(),
@@ -143,7 +144,8 @@ export async function msgHandler(pdu: Pdu, account: Account) {
 			chatId,
 			botInfo,
 			answerCallbackButtonReq,
-			msgSendByUser
+			msgSendByUser,
+			senderLastMsgId
 		).process();
 	}
 }

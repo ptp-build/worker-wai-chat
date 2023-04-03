@@ -11,10 +11,12 @@ export class BotController extends OpenAPIRoute {
 		},
 	};
 	async handle(request: Request, data: Record<string, any>) {
-		const { botInfo, user_id, answerCallbackButtonReq, msg } = await request.json();
+		const { botInfo, senderLastMsgId, user_id, answerCallbackButtonReq, msg } =
+			await request.json();
 		const res = await new BotWorker({
 			botInfo,
 			user_id,
+			senderLastMsgId,
 			answerCallbackButtonReq,
 			msg,
 		}).process();

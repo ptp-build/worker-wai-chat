@@ -15,12 +15,14 @@ export default class {
 	private msgModelBotReply: Msg;
 	private botInfo: PbBotInfo_Type;
 	private answerCallbackButtonReq: AnswerCallbackButtonReq_Type | undefined;
+	private senderLastMsgId: number | undefined;
 	constructor(
 		user_id: string,
 		chatId: string,
 		botInfo: PbBotInfo_Type,
 		answerCallbackButtonReq?: AnswerCallbackButtonReq_Type,
-		msgSendByUser?: Msg
+		msgSendByUser?: Msg,
+		senderLastMsgId?: number
 	) {
 		this.user_id = user_id;
 		this.msgSendByUser = msgSendByUser;
@@ -28,6 +30,7 @@ export default class {
 		this.botId = botInfo.botId;
 		this.answerCallbackButtonReq = answerCallbackButtonReq;
 		this.botInfo = botInfo;
+		this.senderLastMsgId = senderLastMsgId;
 		this.msgModelBotReply = new Msg();
 		this.msgModelBotReply.init(user_id, chatId, true, chatId);
 	}
@@ -58,6 +61,7 @@ export default class {
 						user_id,
 						answerCallbackButtonReq: this.answerCallbackButtonReq,
 						msg,
+						senderLastMsgId: this.senderLastMsgId,
 					}),
 				});
 				res = await resp.json();
@@ -68,6 +72,7 @@ export default class {
 					user_id,
 					answerCallbackButtonReq: this.answerCallbackButtonReq,
 					msg: msgSendByUser?.getMsg(),
+					senderLastMsgId: this.senderLastMsgId,
 				}).process();
 			}
 

@@ -28,18 +28,22 @@ export default class {
 	private user_id: string;
 	private botInfo: PbBotInfo_Type;
 	private answerCallbackButtonReq: AnswerCallbackButtonReq_Type | undefined;
+	private senderLastMsgId?: number;
 
 	constructor({
 		botInfo,
 		user_id,
 		msg,
 		answerCallbackButtonReq,
+		senderLastMsgId,
 	}: {
+		senderLastMsgId?: number;
 		botInfo: PbBotInfo_Type;
 		user_id: string;
 		msg: PbMsg_Type;
 		answerCallbackButtonReq: AnswerCallbackButtonReq_Type | undefined;
 	}) {
+		this.senderLastMsgId = senderLastMsgId;
 		if (msg) {
 			this.msg = new Msg(msg);
 			this.msg.init(user_id, botInfo.botId, true, msg.senderId);
@@ -492,7 +496,10 @@ export default class {
 					);
 				case '/createBot/0':
 					await this.clearMsgContext();
-					return this.replyText('已取消');
+					return {
+						reply: '已取消',
+						removeMessageButton: this.answerCallbackButtonReq.messageId!,
+					};
 			}
 		}
 
@@ -529,7 +536,7 @@ export default class {
 					},
 					inlineButtons,
 					{
-						removeMessageButton: payload.messageId!,
+						removeMessageButton: payload.messageId,
 					}
 				);
 			default:
@@ -1143,7 +1150,9 @@ export default class {
 					return await this.replyMsgContext(
 						'/createBot',
 						'请输入机器人名称:',
-						{ messageId: this.msg?.getMsg().id + 1 },
+						{
+							messageId: this.senderLastMsgId! + 1,
+						},
 						true
 					);
 				case '/clearHistory':
