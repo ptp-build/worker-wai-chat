@@ -38,6 +38,7 @@ async function handleSession(websocket: WebSocket) {
 	let p: Buffer | undefined = undefined;
 	let q: Buffer | undefined = undefined;
 	let authLoginTs: number | undefined = 0;
+
 	websocket.addEventListener('message', async e => {
 		const { data } = e;
 		try {
@@ -45,7 +46,7 @@ async function handleSession(websocket: WebSocket) {
 				return;
 			}
 			let pdu = new Pdu(Buffer.from(data));
-			console.log(
+			Logger.log(
 				'[MESSAGE]',
 				pdu.getSeqNum(),
 				pdu.getCommandId(),
@@ -54,6 +55,7 @@ async function handleSession(websocket: WebSocket) {
 			let pduRsp: Pdu | undefined = undefined;
 			switch (pdu.getCommandId()) {
 				case ActionCommands.CID_AuthStep1Req:
+					Logger.log('[AuthStep1Req]', accountServer.getAccountId());
 					// await initSystemBot(getInitSystemBots());
 					const authStep1Req = AuthStep1Req.parseMsg(pdu);
 					p = Buffer.from(authStep1Req.p);
@@ -125,15 +127,6 @@ async function handleSession(websocket: WebSocket) {
 					let uid = await accountServer.getUidFromCacheByAddress(res2.address);
 					if (!uid) {
 						uid = await genUserId();
-					} else {
-						while (true) {
-							const u = await User.getFromCache(uid);
-							if (u) {
-								uid = await genUserId();
-							} else {
-								break;
-							}
-						}
 					}
 					authLoginTs = +new Date();
 					pduRsp = new AuthPreLoginRes({
