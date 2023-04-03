@@ -204,6 +204,7 @@ message PbUserSetting {
 message PbChatGpBotConfig {
   optional string init_system_content = 1;
   optional string api_key = 2;
+  optional uint32 max_history_length = 3;
 }
 
 message PbQrCode {

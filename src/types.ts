@@ -48,12 +48,21 @@ export type AuthResponse = {
 	password_empty?: boolean;
 };
 
+export type ReplaceMessageButtonType = {
+	messageId: number;
+	reply?: string;
+	inlineButtons?: [];
+};
+
 export type BotWorkerResult = {
 	reply?: string;
+	aiReply?: boolean;
 	photo?: PbPhoto_Type;
 	users?: PbUser_Type[];
 	chats?: PbChat_Type[];
 	action?: MsgType;
 	chatId?: string;
 	inlineButtons?: [];
+	removeMessageButton?: number;
+	replaceMessageButton?: ReplaceMessageButtonType;
 };

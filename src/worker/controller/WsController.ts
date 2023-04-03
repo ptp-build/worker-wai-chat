@@ -23,6 +23,7 @@ import { ERR } from '../../lib/ptp/protobuf/PTPCommon/types';
 import { OtherNotify } from '../../lib/ptp/protobuf/PTPOther';
 import { msgHandler } from './MsgController';
 import { genUserId, User } from '../share/service/User';
+import Logger from '../share/utils/Logger';
 
 export let TASK_EXE_USER_ID = '';
 
@@ -220,7 +221,7 @@ async function handleSession(websocket: WebSocket) {
 	});
 
 	websocket.addEventListener('close', async () => {
-		console.log('[close]', {
+		Logger.log('[close]', {
 			uid: accountServer.getUid()!,
 			accountId: accountServer.getAccountId(),
 		});
@@ -232,14 +233,6 @@ async function handleSession(websocket: WebSocket) {
 			].filter((account: Account) => {
 				return account.getAccountId() !== accountServer.getAccountId();
 			});
-
-			Account.UserIdAccountIdMap[accountServer.getUid()!].forEach((account: Account) => {
-				users.push({
-					id: account.getUid()!,
-					address: account.getAddress()!,
-				});
-			});
-			kv.put('USER_IDS', JSON.stringify(users)).catch(console.log);
 		}
 	});
 }

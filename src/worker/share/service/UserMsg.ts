@@ -136,6 +136,15 @@ export default class UserMsg {
 		UserMsg.userChatMsgIds.set(this.user_chat_id, msgIds!);
 	}
 
+	async getUserChatMsgIdByMsgId(msgId: number, force?: boolean) {
+		if (force) {
+			let msgIds = await this.getUserChatMsgIdsFromKv();
+			this.setUserChatMsgIds(msgIds);
+		}
+		const msgIds = this.getUserChatMsgIds();
+		return msgIds?.get(msgId.toString());
+	}
+
 	adduserChatMsgIds(msgId: number, chatMsgId: number) {
 		const msgIds = this.getUserChatMsgIds();
 		if (msgIds) {
