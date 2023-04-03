@@ -272,7 +272,7 @@ export default class {
 						config!.init_system_content = msgText;
 						await this.msg!.updateAiConfig(config!);
 						return {
-							reply: `当前初始化 Prompt已更新`,
+							reply: `上下文Prompt已更新`,
 							removeMessageButton: payload!.messageId,
 						};
 					}
@@ -527,7 +527,10 @@ export default class {
 					{
 						name: this.msg?.getMsgText(),
 					},
-					inlineButtons
+					inlineButtons,
+					{
+						removeMessageButton: payload.messageId!,
+					}
 				);
 			default:
 				break;
@@ -1140,7 +1143,7 @@ export default class {
 					return await this.replyMsgContext(
 						'/createBot',
 						'请输入机器人名称:',
-						undefined,
+						{ messageId: this.msg?.getMsg().id + 1 },
 						true
 					);
 				case '/clearHistory':
